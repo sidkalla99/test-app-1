@@ -3,12 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Static Website</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Asset Creation Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Static Website</h1>
-    <p>This is a simple static site hosted on AWS Amplify.</p>
-    <script src="script.js"></script>
+    <h2>Asset Creation Form</h2>
+    <form id="assetForm">
+        <label for="id">ID (Auto-generated)</label>
+        <input type="text" id="id" name="id" readonly>
+
+        <label for="asset">Asset</label>
+        <input type="text" id="asset" name="asset" required>
+
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" required>
+
+        <label for="version_date">Version Date</label>
+        <input type="date" id="version_date" name="version_date" required>
+
+        <label for="location">Location</label>
+        <select id="location" name="location" required>
+            <option value="">Select Location</option>
+            <option value="Location 1">Location 1</option>
+            <option value="Location 2">Location 2</option>
+        </select>
+
+        <label for="technology">Technology</label>
+        <select id="technology" name="technology" required>
+            <option value="">Select Technology</option>
+            <option value="Tech 1">Tech 1</option>
+            <option value="Tech 2">Tech 2</option>
+        </select>
+
+        <label for="business_unit">Business Unit</label>
+        <select id="business_unit" name="business_unit" required>
+            <option value="">Select Business Unit</option>
+            <option value="BU 1">BU 1</option>
+            <option value="BU 2">BU 2</option>
+        </select>
+
+        <label for="legal_entity">Legal Entity</label>
+        <select id="legal_entity" name="legal_entity" required>
+            <option value="">Select Legal Entity</option>
+            <option value="Entity 1">Entity 1</option>
+            <option value="Entity 2">Entity 2</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("id").value = "ASSET-" + Math.floor(Math.random() * 10000);
+
+        document.getElementById("assetForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Form submitted successfully!");
+        });
+    </script>
 </body>
 </html>
