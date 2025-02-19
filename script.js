@@ -27,7 +27,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         energy_market_list: ["Id", "Energy Market", "Country"],
     };
 
-    // Clear and regenerate form fields
+    // Clear previous fields
     formFields.innerHTML = "";
 
     if (tableFields[table]) {
@@ -50,7 +50,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         });
     }
 
-    // Ensure CSV upload remains visible
+    // Ensure CSV upload is visible
     csvUploadSection.style.display = "block";
 });
 
@@ -59,22 +59,24 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     event.preventDefault();
     
     const table = document.getElementById("tableSelect").value;
-    let jsonData = { table: table };
+    const formData = new FormData();
+    formData.append("table", table);
 
-    // Check if CSV is uploaded
+    // Get CSV file
     const csvFile = document.getElementById("csvUpload").files[0];
 
     if (csvFile) {
-        jsonData.csvData = await parseCSV(csvFile);
+        const csvData = await parseCSV(csvFile);
+        formData.append("csvData", JSON.stringify(csvData));
     } else {
-        // Collect form inputs only if CSV is NOT uploaded
+        // If no CSV, get form inputs
         const inputs = this.querySelectorAll("input[type='text']");
-        jsonData.formData = {};
+        let jsonData = {};
         let isFormEmpty = true;
 
         inputs.forEach(input => {
             if (input.value.trim() !== "") {
-                jsonData.formData[input.name] = input.value;
+                jsonData[input.name] = input.value;
                 isFormEmpty = false;
             }
         });
@@ -83,13 +85,14 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             alert("Please either upload a CSV file or fill the form.");
             return;
         }
+
+        formData.append("formData", JSON.stringify(jsonData));
     }
 
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(jsonData)
+            body: formData
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
