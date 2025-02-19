@@ -3,6 +3,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
     const formContainer = document.getElementById("formContainer");
     const formTitle = document.getElementById("formTitle");
     const formFields = document.getElementById("formFields");
+    const csvUploadSection = document.getElementById("csvUploadSection");
 
     if (!table) {
         formContainer.style.display = "none";
@@ -26,22 +27,30 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         energy_market_list: ["Id", "Energy Market", "Country"],
     };
 
-    // Generate form fields dynamically (DO NOT REMOVE existing CSV option)
+    // Clear and regenerate form fields
     formFields.innerHTML = "";
-    
-    tableFields[table].forEach(field => {
-        const label = document.createElement("label");
-        label.textContent = field;
-        const input = document.createElement("input");
-        input.type = "text";
-        input.name = field.toLowerCase().replace(/\s+/g, "_");
-        input.required = false;  // ✅ Make fields optional to allow CSV-only upload
-        formFields.appendChild(label);
-        formFields.appendChild(input);
-    });
+
+    if (tableFields[table]) {
+        tableFields[table].forEach(field => {
+            const fieldContainer = document.createElement("div");
+            fieldContainer.classList.add("form-group");
+
+            const label = document.createElement("label");
+            label.textContent = field;
+            label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.name = field.toLowerCase().replace(/\s+/g, "_");
+            input.classList.add("form-control");
+
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+            formFields.appendChild(fieldContainer);
+        });
+    }
 
     // Ensure CSV upload remains visible
-    const csvUploadSection = document.getElementById("csvUploadSection");
     csvUploadSection.style.display = "block";
 });
 
@@ -56,7 +65,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     const csvFile = document.getElementById("csvUpload").files[0];
 
     if (csvFile) {
-        jsonData.csvData = await parseCSV(csvFile);  // ✅ If CSV is uploaded, process it
+        jsonData.csvData = await parseCSV(csvFile);
     } else {
         // Collect form inputs only if CSV is NOT uploaded
         const inputs = this.querySelectorAll("input[type='text']");
@@ -79,9 +88,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json"  
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(jsonData)
         });
 
