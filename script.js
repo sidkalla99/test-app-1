@@ -11,13 +11,22 @@ document.getElementById("assetForm").addEventListener("submit", async function(e
         legal_entity: document.getElementById("legal_entity").value,
     };
 
-    const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-    });
+    console.log("Sending data:", formData); // Debug log
 
-    const result = await response.json();
-    alert(result.message); // Show success or error message
+    try {
+        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        console.log("Response received:", response); // Debug log
+
+        const result = await response.json();
+        console.log("Response JSON:", result); // Debug log
+
+        alert(result.message); // Show success or error message
+    } catch (error) {
+        console.error("Error during fetch:", error);
+    }
 });
-
