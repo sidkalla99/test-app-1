@@ -14,16 +14,16 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 
     // Define form fields for each table
     const tableFields = {
-        country: ["Id", "Country"],
-        asset: ["Id", "Asset", "Creation Date", "Country"],
-        technology: ["Id", "Technology"],
-        business_unit: ["Id", "Business Unit"],
-        legal_entity: ["Id", "Parent Company", "Legal Entity"],
-        iso: ["Id", "ISO", "Country"],
+        country_list: ["Id", "Country"],
+        asset_list: ["Id", "Asset", "Creation Date", "Country"],
+        technology_list: ["Id", "Technology"],
+        business_unit_list: ["Id", "Business Unit"],
+        legal_entity_list: ["Id", "Parent Company", "Legal Entity"],
+        iso_list: ["Id", "ISO", "Country"],
         asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
-        currency: ["Id", "Currency"],
-        energy_market: ["Id", "Energy Market", "Country"],
+        ownership_monthly_vector: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
+        currency_list: ["Id", "Currency"],
+        energy_market_list: ["Id", "Energy Market", "Country"],
     };
 
     // Generate form fields dynamically
@@ -34,7 +34,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         const input = document.createElement("input");
         input.type = "text";
         input.name = field.toLowerCase().replace(/\s+/g, "_");
-        input.required = true;
+        input.required = false;  // ✅ Make fields optional to allow CSV-only upload
         formFields.appendChild(label);
         formFields.appendChild(input);
     });
@@ -49,22 +49,35 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Check if CSV is uploaded
     const csvFile = document.getElementById("csvUpload").files[0];
+
     if (csvFile) {
-        jsonData.csvData = await parseCSV(csvFile); // ✅ Parse CSV and attach JSON data
+        jsonData.csvData = await parseCSV(csvFile);  // ✅ If CSV is uploaded, process it
     } else {
-        // Collect form inputs if not using CSV
+        // Collect form inputs only if CSV is NOT uploaded
         const inputs = this.querySelectorAll("input[type='text']");
         jsonData.formData = {};
-        inputs.forEach(input => { jsonData.formData[input.name] = input.value; });
+        let isFormEmpty = true;
+
+        inputs.forEach(input => {
+            if (input.value.trim() !== "") {
+                jsonData.formData[input.name] = input.value;
+                isFormEmpty = false;
+            }
+        });
+
+        if (isFormEmpty) {
+            alert("Please either upload a CSV file or fill the form.");
+            return;
+        }
     }
 
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
             headers: { 
-                "Content-Type": "application/json"  // ✅ Required for API to accept JSON
+                "Content-Type": "application/json"  
             },
-            body: JSON.stringify(jsonData)  // ✅ Convert to JSON before sending
+            body: JSON.stringify(jsonData)
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
