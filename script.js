@@ -26,8 +26,9 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         energy_market_list: ["Id", "Energy Market", "Country"],
     };
 
-    // Generate form fields dynamically
+    // Generate form fields dynamically (DO NOT REMOVE existing CSV option)
     formFields.innerHTML = "";
+    
     tableFields[table].forEach(field => {
         const label = document.createElement("label");
         label.textContent = field;
@@ -38,6 +39,10 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         formFields.appendChild(label);
         formFields.appendChild(input);
     });
+
+    // Ensure CSV upload remains visible
+    const csvUploadSection = document.getElementById("csvUploadSection");
+    csvUploadSection.style.display = "block";
 });
 
 // Handle Form Submission
