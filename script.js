@@ -1,6 +1,8 @@
 document.getElementById("assetForm").addEventListener("submit", async function(event) {
     event.preventDefault(); // Prevent page refresh
-
+    
+    console.log("FILLING data"); // Debug log
+    
     const formData = {
         asset: document.getElementById("asset").value,
         description: document.getElementById("description").value,
