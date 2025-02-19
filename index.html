@@ -4,23 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Creation Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: auto;
-            padding: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">  <!-- Link to CSS -->
 </head>
 <body>
     <h2>Asset Creation Form</h2>
@@ -68,13 +52,6 @@
         <button type="submit">Submit</button>
     </form>
 
-    <script>
-        document.getElementById("id").value = "ASSET-" + Math.floor(Math.random() * 10000);
-
-        document.getElementById("assetForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            alert("Form submitted successfully!");
-        });
-    </script>
+    <script src="script.js"></script>  <!-- Link to JS -->
 </body>
 </html>
