@@ -3,37 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Data Entry Form</title>
+    <title>Dynamic Form with CSV Upload</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-        }
-        #formContainer {
-            margin-top: 20px;
-            display: none; /* Hide form until a table is selected */
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        label, select, input, button { display: block; margin-top: 10px; width: 100%; padding: 8px; }
+        #formContainer { margin-top: 20px; border: 1px solid #ccc; padding: 20px; display: none; }
     </style>
 </head>
 <body>
-
-    <h2>Dynamic Data Entry Form</h2>
-    
-    <!-- Dropdown to select table -->
-    <label for="tableSelector">Select Data Table:</label>
-    <select id="tableSelector">
-        <option value="">-- Select an option --</option>
+    <h2>Select Table to Update</h2>
+    <label for="tableSelect">Choose a table:</label>
+    <select id="tableSelect">
+        <option value="">-- Select Table --</option>
         <option value="country_list">Country List</option>
         <option value="asset_list">Asset List</option>
         <option value="technology_list">Technology List</option>
@@ -46,16 +27,16 @@
         <option value="energy_market_list">Energy Market List</option>
     </select>
 
-    <!-- Dynamic form container -->
     <div id="formContainer">
         <h3 id="formTitle"></h3>
         <form id="dynamicForm">
             <div id="formFields"></div>
+            <label for="csvUpload">Bulk Upload (CSV):</label>
+            <input type="file" id="csvUpload" accept=".csv">
             <button type="submit">Submit</button>
         </form>
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
