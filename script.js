@@ -14,16 +14,16 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 
     // Define form fields for each table
     const tableFields = {
-        country_list: ["Id", "Country"],
-        asset_list: ["Id", "Asset", "Creation Date", "Country"],
-        technology_list: ["Id", "Technology"],
-        business_unit_list: ["Id", "Business Unit"],
-        legal_entity_list: ["Id", "Parent Company", "Legal Entity"],
-        iso_list: ["Id", "ISO", "Country"],
+        country: ["Id", "Country"],
+        asset: ["Id", "Asset", "Creation Date", "Country"],
+        technology: ["Id", "Technology"],
+        business_unit: ["Id", "Business Unit"],
+        legal_entity: ["Id", "Parent Company", "Legal Entity"],
+        iso: ["Id", "ISO", "Country"],
         asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership_monthly_vector: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
-        currency_list: ["Id", "Currency"],
-        energy_market_list: ["Id", "Energy Market", "Country"],
+        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
+        currency: ["Id", "Currency"],
+        energy_market: ["Id", "Energy Market", "Country"],
     };
 
     // Generate form fields dynamically
