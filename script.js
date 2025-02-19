@@ -3,7 +3,6 @@ document.getElementById("tableSelect").addEventListener("change", function () {
     const formContainer = document.getElementById("formContainer");
     const formTitle = document.getElementById("formTitle");
     const formFields = document.getElementById("formFields");
-    const csvUpload = document.getElementById("csvUpload");
 
     if (!table) {
         formContainer.style.display = "none";
@@ -30,7 +29,6 @@ document.getElementById("tableSelect").addEventListener("change", function () {
     // Clear previous fields
     formFields.innerHTML = "";
 
-    // Populate form fields dynamically
     if (tableFields[table]) {
         tableFields[table].forEach(field => {
             const fieldContainer = document.createElement("div");
@@ -50,39 +48,37 @@ document.getElementById("tableSelect").addEventListener("change", function () {
             formFields.appendChild(fieldContainer);
         });
     }
-
-    // Reset file input when table changes
-    csvUpload.value = "";
 });
 
 // Handle Form Submission
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
-
+    
     const table = document.getElementById("tableSelect").value;
-    const csvFile = document.getElementById("csvUpload").files[0];
     const formData = new FormData();
     formData.append("table", table);
 
-    // If a CSV file is uploaded, process CSV
+    // Get CSV file
+    const csvFile = document.getElementById("csvUpload").files[0];
+
     if (csvFile) {
         const csvData = await parseCSV(csvFile);
         formData.append("csvData", JSON.stringify(csvData));
     } else {
-        // If no CSV, check for form input values
+        // If no CSV, get form inputs
         const inputs = this.querySelectorAll("input[type='text']");
         let jsonData = {};
-        let isFormFilled = false;
+        let isFormEmpty = true;
 
         inputs.forEach(input => {
             if (input.value.trim() !== "") {
                 jsonData[input.name] = input.value;
-                isFormFilled = true;
+                isFormEmpty = false;
             }
         });
 
-        if (!isFormFilled) {
-            alert("Please either fill the form or upload a CSV file.");
+        if (isFormEmpty) {
+            alert("Please either upload a CSV file or fill the form.");
             return;
         }
 
@@ -92,11 +88,11 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
-            body: formData
+            body: formData // No need to set Content-Type manually
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
+        
         const result = await response.json();
         alert(result.message);
     } catch (error) {
