@@ -62,7 +62,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     }
 
     try {
-        const response = await fetch("https://your-api-gateway-url", {
+        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
             body: formData
         });
