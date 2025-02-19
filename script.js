@@ -55,15 +55,14 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     event.preventDefault();
     
     const table = document.getElementById("tableSelect").value;
-    const formData = new FormData();
-    formData.append("table", table);
+    let payload = { table: table };
 
     // Get CSV file
     const csvFile = document.getElementById("csvUpload").files[0];
 
     if (csvFile) {
         const csvData = await parseCSV(csvFile);
-        formData.append("csvData", JSON.stringify(csvData));
+        payload.csvData = csvData;
     } else {
         // If no CSV, get form inputs
         const inputs = this.querySelectorAll("input[type='text']");
@@ -82,13 +81,14 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             return;
         }
 
-        formData.append("formData", JSON.stringify(jsonData));
+        payload.formData = jsonData;
     }
 
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
-            body: formData // No need to set Content-Type manually
+            headers: { "Content-Type": "application/json" }, // Set content type as JSON
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
