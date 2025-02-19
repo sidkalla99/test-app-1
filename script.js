@@ -3,7 +3,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
     const formContainer = document.getElementById("formContainer");
     const formTitle = document.getElementById("formTitle");
     const formFields = document.getElementById("formFields");
-    const csvUploadSection = document.getElementById("csvUploadSection");
+    const csvUpload = document.getElementById("csvUpload");
 
     if (!table) {
         formContainer.style.display = "none";
@@ -15,21 +15,22 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 
     // Define form fields for each table
     const tableFields = {
-        country_list: ["Id", "Country"],
-        asset_list: ["Id", "Asset", "Creation Date", "Country"],
-        technology_list: ["Id", "Technology"],
-        business_unit_list: ["Id", "Business Unit"],
-        legal_entity_list: ["Id", "Parent Company", "Legal Entity"],
-        iso_list: ["Id", "ISO", "Country"],
+        country: ["Id", "Country"],
+        asset: ["Id", "Asset", "Creation Date", "Country"],
+        technology: ["Id", "Technology"],
+        business_unit: ["Id", "Business Unit"],
+        legal_entity: ["Id", "Parent Company", "Legal Entity"],
+        iso: ["Id", "ISO", "Country"],
         asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership_monthly_vector: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
-        currency_list: ["Id", "Currency"],
-        energy_market_list: ["Id", "Energy Market", "Country"],
+        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
+        currency: ["Id", "Currency"],
+        energy_market: ["Id", "Energy Market", "Country"],
     };
 
     // Clear previous fields
     formFields.innerHTML = "";
 
+    // Populate form fields dynamically
     if (tableFields[table]) {
         tableFields[table].forEach(field => {
             const fieldContainer = document.createElement("div");
@@ -50,39 +51,38 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         });
     }
 
-    // Ensure CSV upload is visible
-    csvUploadSection.style.display = "block";
+    // Reset file input when table changes
+    csvUpload.value = "";
 });
 
 // Handle Form Submission
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
-    
+
     const table = document.getElementById("tableSelect").value;
+    const csvFile = document.getElementById("csvUpload").files[0];
     const formData = new FormData();
     formData.append("table", table);
 
-    // Get CSV file
-    const csvFile = document.getElementById("csvUpload").files[0];
-
+    // If a CSV file is uploaded, process CSV
     if (csvFile) {
         const csvData = await parseCSV(csvFile);
         formData.append("csvData", JSON.stringify(csvData));
     } else {
-        // If no CSV, get form inputs
+        // If no CSV, check for form input values
         const inputs = this.querySelectorAll("input[type='text']");
         let jsonData = {};
-        let isFormEmpty = true;
+        let isFormFilled = false;
 
         inputs.forEach(input => {
             if (input.value.trim() !== "") {
                 jsonData[input.name] = input.value;
-                isFormEmpty = false;
+                isFormFilled = true;
             }
         });
 
-        if (isFormEmpty) {
-            alert("Please either upload a CSV file or fill the form.");
+        if (!isFormFilled) {
+            alert("Please either fill the form or upload a CSV file.");
             return;
         }
 
@@ -96,7 +96,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
+
         const result = await response.json();
         alert(result.message);
     } catch (error) {
