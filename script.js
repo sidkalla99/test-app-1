@@ -45,30 +45,34 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     event.preventDefault();
     
     const table = document.getElementById("tableSelect").value;
-    const formData = new FormData();
-    formData.append("table", table);
+    let jsonData = { table: table };
 
     // Check if CSV is uploaded
     const csvFile = document.getElementById("csvUpload").files[0];
     if (csvFile) {
-        const csvData = await parseCSV(csvFile);
-        formData.append("csvData", JSON.stringify(csvData));  // Send CSV data as JSON
+        jsonData.csvData = await parseCSV(csvFile); // ✅ Parse CSV and attach JSON data
     } else {
         // Collect form inputs if not using CSV
         const inputs = this.querySelectorAll("input[type='text']");
-        const jsonData = {};
-        inputs.forEach(input => { jsonData[input.name] = input.value; });
-        formData.append("formData", JSON.stringify(jsonData));
+        jsonData.formData = {};
+        inputs.forEach(input => { jsonData.formData[input.name] = input.value; });
     }
 
     try {
         const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
-            body: formData
+            headers: { 
+                "Content-Type": "application/json"  // ✅ Required for API to accept JSON
+            },
+            body: JSON.stringify(jsonData)  // ✅ Convert to JSON before sending
         });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
         const result = await response.json();
         alert(result.message);
     } catch (error) {
+        console.error("Error submitting data:", error);
         alert("Error submitting data");
     }
 });
