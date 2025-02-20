@@ -5,42 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zelestra ETRM Raw Data Uploader</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: auto; 
+            padding: 80px 20px 20px 20px; 
         }
-        label, select, input, button {
-            display: block;
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px;
-        }
-        #formContainer {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 20px;
-            display: none;
-        }
-        /* Flex container for H2 and Logo */
-        .header-flex {
+        
+        /* Navbar Styles */
+        .navbar {
+            background-color: #333;
+            color: white;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
         }
-        .header-flex img {
-            max-height: 40px;
+        
+        .navbar img {
+            height: 30px;
+        }
+
+        .navbar .date-time {
+            font-size: 14px;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        label, select, input, button { 
+            display: block; 
+            margin-top: 10px; 
+            width: 100%; 
+            padding: 8px; 
+        }
+        
+        #formContainer { 
+            margin-top: 20px; 
+            border: 1px solid #ccc; 
+            padding: 20px; 
+            display: none; 
         }
     </style>
 </head>
 <body>
-    <h1>Energy Trading and Risk Management Data Uploader Tool</h1>
-    <div class="header-flex">
-        <h2>Which information you would like to Add</h2>
+
+    <!-- Navbar -->
+    <div class="navbar">
         <img src="company_logo.png" alt="Company Logo">
+        <div class="date-time" id="dateTime"></div>
     </div>
 
+    <h1>Energy Trading and Risk Management Data Uploader Tool</h1>
+    <h2>Which information you would like to Add</h2>
+    
     <label for="tableSelect">Choose a Category:</label>
     <select id="tableSelect">
         <option value="">-- Select Category --</option>
@@ -66,6 +91,18 @@
         </form>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Display Date and Time with IST
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeString = now.toLocaleString('en-GB', {
+                hour12: false
+            }) + " IST";
+            document.getElementById('dateTime').innerText = dateTimeString;
+        }
+
+        setInterval(updateDateTime, 1000);  // Update every second
+        updateDateTime();  // Initial call
+    </script>
 </body>
 </html>
