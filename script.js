@@ -77,6 +77,9 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     
+    const successMessage = document.getElementById("successMessage");
+    successMessage.style.display = "none"; // Hide the message initially
+
     const table = document.getElementById("tableSelect").value;
     let payload = { table: table, data: [] };
 
@@ -119,7 +122,16 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const result = await response.json();
-        alert(result.message);
+        
+        // Show success message
+        successMessage.innerText = "Data uploaded successfully!";
+        successMessage.style.color = "green";
+        successMessage.style.display = "block";
+
+        // Clear form fields and file input (optional)
+        this.reset();
+        document.getElementById("csvUpload").value = "";
+        
     } catch (error) {
         console.error("Error submitting data:", error);
         alert("Error submitting data");
