@@ -64,7 +64,7 @@
     </div>
 
     <h1>Energy Trading and Risk Management Data Uploader Tool</h1>
-    <h2>Which information you would like to Add</h2>
+    <h2>Which information you would like to add</h2>
     
     <label for="tableSelect">Choose a Category:</label>
     <select id="tableSelect">
@@ -91,18 +91,7 @@
         </form>
     </div>
 
-    <script>
-        // Display Date and Time with IST
-        function updateDateTime() {
-            const now = new Date();
-            const dateTimeString = now.toLocaleString('en-GB', {
-                hour12: false
-            }) + " IST";
-            document.getElementById('dateTime').innerText = dateTimeString;
-        }
-
-        setInterval(updateDateTime, 1000);  // Update every second
-        updateDateTime();  // Initial call
-    </script>
+    <!-- Load script.js for all JS functionalities -->
+    <script src="script.js"></script>
 </body>
 </html>
