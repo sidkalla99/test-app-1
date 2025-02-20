@@ -12,7 +12,6 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
 
-
 // =========================
 // Dynamic Form Handling
 // =========================
@@ -77,9 +76,6 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     
-    const successMessage = document.getElementById("successMessage");
-    successMessage.style.display = "none"; // Hide the message initially
-
     const table = document.getElementById("tableSelect").value;
     let payload = { table: table, data: [] };
 
@@ -122,19 +118,33 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const result = await response.json();
-        
-        // Show success message
-        successMessage.innerText = "Data uploaded successfully!";
-        successMessage.style.color = "green";
-        successMessage.style.display = "block";
+        alert(result.message);
 
-        // Clear form fields and file input (optional)
-        this.reset();
-        document.getElementById("csvUpload").value = "";
+        // Show success message in the warning box
+        const warningBox = document.getElementById("warningBox");
+        warningBox.textContent = "Data uploaded successfully!";
+        warningBox.style.color = "green";
+        warningBox.style.display = "block";
+
+        // Automatically hide after 5 seconds
+        setTimeout(() => {
+            warningBox.style.display = "none";
+        }, 5000);
         
     } catch (error) {
         console.error("Error submitting data:", error);
         alert("Error submitting data");
+
+        // Show error message in the warning box
+        const warningBox = document.getElementById("warningBox");
+        warningBox.textContent = "Error submitting data!";
+        warningBox.style.color = "red";
+        warningBox.style.display = "block";
+
+        // Automatically hide after 5 seconds
+        setTimeout(() => {
+            warningBox.style.display = "none";
+        }, 5000);
     }
 });
 
@@ -159,82 +169,4 @@ async function parseCSV(file) {
         reader.onerror = () => reject("Error reading CSV file");
         reader.readAsText(file);
     });
-}
-
-// =========================
-// Fetch and Display Data from CSV in S3
-// =========================
-async function fetchTableData(tableName) {
-    try {
-        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datafetcher?table=${tableName}`);
-        if (!response.ok) throw new Error("Failed to fetch data");
-
-        const csvText = await response.text();
-        const data = parseCSVText(csvText);
-
-        console.log("Fetched Data:", data);
-        displayTableData(data);
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-}
-
-// =========================
-// Convert CSV Text to JSON
-// =========================
-function parseCSVText(csvText) {
-    const lines = csvText.split("\n").filter(line => line.trim() !== "");
-    const headers = lines.shift().split(",").map(header => header.trim());
-    
-    return lines.map(line => {
-        const values = line.split(",").map(value => value.trim());
-        let obj = {};
-        headers.forEach((header, index) => {
-            obj[header] = values[index];
-        });
-        return obj;
-    });
-}
-
-// =========================
-// Display Data in Table
-// =========================
-function displayTableData(data) {
-    const tableContainer = document.getElementById("tableContainer");
-    tableContainer.innerHTML = ""; 
-
-    if (data.length === 0) {
-        tableContainer.innerHTML = "<p>No data available.</p>";
-        return;
-    }
-
-    const table = document.createElement("table");
-    table.classList.add("data-table");
-
-    // Create table header
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
-
-    Object.keys(data[0]).forEach(header => {
-        const th = document.createElement("th");
-        th.textContent = header;
-        headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    // Create table body
-    const tbody = document.createElement("tbody");
-    data.forEach(row => {
-        const tr = document.createElement("tr");
-        Object.values(row).forEach(value => {
-            const td = document.createElement("td");
-            td.textContent = value;
-            tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-    });
-    table.appendChild(tbody);
-
-    tableContainer.appendChild(table);
 }
