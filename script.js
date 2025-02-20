@@ -116,9 +116,18 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
+                
         const result = await response.json();
-        alert(result.message);
+        
+        // Display success message in the warning box
+        const warningBox = document.getElementById("warningBox");
+        warningBox.style.display = "block";
+        warningBox.style.color = "green";
+        warningBox.textContent = result.message || "Data uploaded successfully!";
+        
+        // Clear form inputs after submission
+        document.getElementById("dynamicForm").reset();
+        document.getElementById("csvUpload").value = "";
 
         // Show success message in the warning box
         const warningBox = document.getElementById("warningBox");
