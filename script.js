@@ -1,3 +1,21 @@
+// =========================
+// Date and Time Display
+// =========================
+function updateDateTime() {
+    const now = new Date();
+    const dateTimeString = now.toLocaleString('en-GB', {
+        hour12: false
+    }) + " IST";
+    document.getElementById('dateTime').innerText = dateTimeString;
+}
+
+setInterval(updateDateTime, 1000);  // Update every second
+updateDateTime();  // Initial call
+
+
+// =========================
+// Dynamic Form Handling
+// =========================
 document.getElementById("tableSelect").addEventListener("change", function () {
     const table = this.value;
     const formContainer = document.getElementById("formContainer");
@@ -53,12 +71,14 @@ document.getElementById("tableSelect").addEventListener("change", function () {
     fetchTableData(table);
 });
 
+// =========================
 // Handle Form Submission
+// =========================
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     
     const table = document.getElementById("tableSelect").value;
-    let payload = { table: table, data: [] }; // Ensure "data" is an array
+    let payload = { table: table, data: [] };
 
     // Get CSV file
     const csvFile = document.getElementById("csvUpload").files[0];
@@ -69,7 +89,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             alert("CSV file is empty or invalid.");
             return;
         }
-        payload.data = csvData; // Set parsed CSV data
+        payload.data = csvData;
     } else {
         // If no CSV, get form inputs
         const inputs = this.querySelectorAll("input[type='text']");
@@ -86,7 +106,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             return;
         }
 
-        payload.data = [jsonData]; // Convert form input to an array
+        payload.data = [jsonData];
     }
 
     try {
@@ -106,7 +126,9 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     }
 });
 
+// =========================
 // Parse CSV File into JSON
+// =========================
 async function parseCSV(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -127,23 +149,27 @@ async function parseCSV(file) {
     });
 }
 
+// =========================
 // Fetch and Display Data from CSV in S3
+// =========================
 async function fetchTableData(tableName) {
     try {
         const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datafetcher?table=${tableName}`);
         if (!response.ok) throw new Error("Failed to fetch data");
 
-        const csvText = await response.text(); // Fetch CSV as text
-        const data = parseCSVText(csvText); // Convert CSV to JSON format
+        const csvText = await response.text();
+        const data = parseCSVText(csvText);
 
         console.log("Fetched Data:", data);
-        displayTableData(data); // Display the parsed data in table format
+        displayTableData(data);
     } catch (error) {
         console.error("Error fetching data:", error);
     }
 }
 
+// =========================
 // Convert CSV Text to JSON
+// =========================
 function parseCSVText(csvText) {
     const lines = csvText.split("\n").filter(line => line.trim() !== "");
     const headers = lines.shift().split(",").map(header => header.trim());
@@ -158,10 +184,12 @@ function parseCSVText(csvText) {
     });
 }
 
+// =========================
 // Display Data in Table
+// =========================
 function displayTableData(data) {
     const tableContainer = document.getElementById("tableContainer");
-    tableContainer.innerHTML = ""; // Clear previous data
+    tableContainer.innerHTML = ""; 
 
     if (data.length === 0) {
         tableContainer.innerHTML = "<p>No data available.</p>";
@@ -198,9 +226,3 @@ function displayTableData(data) {
 
     tableContainer.appendChild(table);
 }
-
-// Call function when table selection changes
-document.getElementById("tableSelect").addEventListener("change", function () {
-    const table = this.value;
-    if (table) fetchTableData(table);
-});
