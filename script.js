@@ -77,16 +77,16 @@ function triggerForm(table) {
     formFields.innerHTML = "";
 
     const tableFields = {
-        country: ["Id", "Country"],
-        asset: ["Id", "Asset", "Creation Date", "Country"],
-        technology: ["Id", "Technology"],
-        business_unit: ["Id", "Business Unit"],
-        legal_entity: ["Id", "Parent Company", "Legal Entity"],
-        iso: ["Id", "ISO", "Country"],
-        asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
-        currency: ["Id", "Currency"],
-        energy_market: ["Id", "Energy Market", "Country"],
+        country: ["Country"],
+        asset: ["Asset", "Creation Date", "Country"],
+        technology: ["Technology"],
+        business_unit: ["Business Unit"],
+        legal_entity: ["Parent Company", "Legal Entity"],
+        iso: ["ISO", "Country"],
+        asset_description: ["Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
+        ownership: ["Asset", "Description", "Month Year", "Ownership (%)"],
+        currency: ["Currency"],
+        energy_market: ["Energy Market", "Country"],
     };
 
     if (tableFields[table]) {
