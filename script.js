@@ -8,28 +8,74 @@ function updateDateTime() {
     }) + " IST";
     document.getElementById('dateTime').innerText = dateTimeString;
 }
-
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
 
 // =========================
-// Dynamic Form Handling
+// Action Selection Handling
 // =========================
-document.getElementById("tableSelect").addEventListener("change", function () {
-    const table = this.value;
-    const formContainer = document.getElementById("formContainer");
-    const formTitle = document.getElementById("formTitle");
-    const formFields = document.getElementById("formFields");
+document.getElementById("actionSelect").addEventListener("change", function () {
+    const action = this.value;
+    const createDropdown = document.getElementById("createDropdown");
+    const modifyDropdown = document.getElementById("modifyDropdown");
+    const entryTypeDropdown = document.getElementById("entryTypeDropdown");
 
-    if (!table) {
-        formContainer.style.display = "none";
-        return;
+    // Reset All Selections
+    document.getElementById("tableSelectCreate").value = "";
+    document.getElementById("tableSelectModify").value = "";
+    document.getElementById("entryTypeSelect").value = "";
+    document.getElementById("formContainer").style.display = "none";
+    document.getElementById("csvContainer").style.display = "none";
+
+    createDropdown.style.display = "none";
+    modifyDropdown.style.display = "none";
+    entryTypeDropdown.style.display = "none";
+
+    if (action === "create") {
+        createDropdown.style.display = "block";
+    } else if (action === "modify") {
+        modifyDropdown.style.display = "block";
     }
+});
 
-    formContainer.style.display = "block";
-    formTitle.textContent = `Add Data to ${table.replace(/_/g, " ")}`;
+// =========================
+// Dropdown Change Handlers
+// =========================
+document.getElementById("tableSelectCreate").addEventListener("change", function () {
+    resetEntryType();
+    document.getElementById("entryTypeDropdown").style.display = this.value ? "block" : "none";
+});
+document.getElementById("tableSelectModify").addEventListener("change", function () {
+    resetEntryType();
+    document.getElementById("entryTypeDropdown").style.display = this.value ? "block" : "none";
+});
 
-    // Define form fields for each table
+// =========================
+// Entry Type Selection
+// =========================
+document.getElementById("entryTypeSelect").addEventListener("change", function () {
+    const entryType = this.value;
+    const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
+
+    // Hide both containers first
+    document.getElementById("formContainer").style.display = "none";
+    document.getElementById("csvContainer").style.display = "none";
+
+    if (entryType === "manual") {
+        triggerForm(table);
+        document.getElementById("formContainer").style.display = "block";
+    } else if (entryType === "bulk") {
+        document.getElementById("csvContainer").style.display = "block";
+    }
+});
+
+// =========================
+// Dynamic Form Generation
+// =========================
+function triggerForm(table) {
+    const formFields = document.getElementById("formFields");
+    formFields.innerHTML = "";
+
     const tableFields = {
         country: ["Id", "Country"],
         asset: ["Id", "Asset", "Creation Date", "Country"],
@@ -42,9 +88,6 @@ document.getElementById("tableSelect").addEventListener("change", function () {
         currency: ["Id", "Currency"],
         energy_market: ["Id", "Energy Market", "Country"],
     };
-
-    // Clear previous fields
-    formFields.innerHTML = "";
 
     if (tableFields[table]) {
         tableFields[table].forEach(field => {
@@ -65,10 +108,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
             formFields.appendChild(fieldContainer);
         });
     }
-
-    // Fetch and display data for the selected table
-    fetchTableData(table);
-});
+}
 
 // =========================
 // Handle Form Submission
@@ -76,7 +116,7 @@ document.getElementById("tableSelect").addEventListener("change", function () {
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     
-    const table = document.getElementById("tableSelect").value;
+    const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
     let payload = { table: table, data: [] };
 
     // Get CSV file
@@ -118,34 +158,14 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const result = await response.json();
-
-        // Show success message in the warning box
-        const warningBox = document.getElementById("warningBox");
-        warningBox.textContent = result.message || "Data uploaded successfully!";
-        warningBox.style.color = "green";
-        warningBox.style.display = "block";
-
-        // Automatically hide after 5 seconds
-        setTimeout(() => {
-            warningBox.style.display = "none";
-        }, 5000);
-
-        // Clear form inputs after submission
+        alert(result.message || "Data uploaded successfully!");
+        
+        // Clear form after submission
         document.getElementById("dynamicForm").reset();
         document.getElementById("csvUpload").value = "";
     } catch (error) {
         console.error("Error submitting data:", error);
-
-        // Show error message in the warning box
-        const warningBox = document.getElementById("warningBox");
-        warningBox.textContent = "Error submitting data!";
-        warningBox.style.color = "red";
-        warningBox.style.display = "block";
-
-        // Automatically hide after 5 seconds
-        setTimeout(() => {
-            warningBox.style.display = "none";
-        }, 5000);
+        alert("Error submitting data!");
     }
 });
 
@@ -170,4 +190,14 @@ async function parseCSV(file) {
         reader.onerror = () => reject("Error reading CSV file");
         reader.readAsText(file);
     });
+}
+
+// =========================
+// Reset Functions
+// =========================
+function resetEntryType() {
+    // Reset entry type dropdown
+    document.getElementById("entryTypeSelect").value = "";
+    document.getElementById("formContainer").style.display = "none";
+    document.getElementById("csvContainer").style.display = "none";
 }
