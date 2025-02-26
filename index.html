@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zelestra ETRM Raw Data Uploader</title>
-    <link rel="stylesheet" href="stlye.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -15,35 +15,70 @@
     </div>
 
     <h1>Energy Trading and Risk Management Data Uploader Tool</h1>
-    <h2>Which information you would like to add</h2>
+    <h2>What would you like to do?</h2>
     
-    <label for="tableSelect">Choose a Category:</label>
-    <select id="tableSelect">
-        <option value="">-- Select Category --</option>
-        <option value="country">Country</option>
-        <option value="asset">Asset</option>
-        <option value="technology">Technology</option>
-        <option value="business_unit">Business Unit</option>
-        <option value="legal_entity">Legal Entity</option>
-        <option value="iso">ISO</option>
-        <option value="asset_description">Asset Description</option>
-        <option value="ownership">Ownership Monthly Vector</option>
-        <option value="currency">Currency</option>
-        <option value="energy_market">Energy Market</option>
+    <!-- Level 1: Main Dropdown for Create or Modify -->
+    <label for="actionSelect">Choose Action:</label>
+    <select id="actionSelect">
+        <option value="">-- Select Action --</option>
+        <option value="create">Create</option>
+        <option value="modify">Modify</option>
     </select>
 
-    <div id="formContainer">
+    <!-- Level 2: Create Dropdown (Shown if 'Create' is selected) -->
+    <div id="createDropdown" style="display: none;">
+        <label for="tableSelectCreate">Choose a Category:</label>
+        <select id="tableSelectCreate">
+            <option value="">-- Select Category --</option>
+            <option value="country">Country</option>
+            <option value="asset">Asset</option>
+            <option value="technology">Technology</option>
+            <option value="business_unit">Business Unit</option>
+            <option value="legal_entity">Legal Entity</option>
+            <option value="iso">ISO</option>
+            <option value="ownership">Ownership Monthly Vector</option>
+            <option value="currency">Currency</option>
+            <option value="energy_market">Energy Market</option>
+        </select>
+    </div>
+
+    <!-- Level 2: Modify Dropdown (Shown if 'Modify' is selected) -->
+    <div id="modifyDropdown" style="display: none;">
+        <label for="tableSelectModify">Choose a Category:</label>
+        <select id="tableSelectModify">
+            <option value="">-- Select Category --</option>
+            <option value="asset_description">Asset Description</option>
+        </select>
+    </div>
+
+    <!-- Level 3: Manual or Bulk -->
+    <div id="entryTypeDropdown" style="display: none;">
+        <label for="entryTypeSelect">Choose Entry Type:</label>
+        <select id="entryTypeSelect">
+            <option value="">-- Select Entry Type --</option>
+            <option value="manual">Manual</option>
+            <option value="bulk">Bulk</option>
+        </select>
+    </div>
+
+    <!-- Dynamic Form Container -->
+    <div id="formContainer" style="display: none;">
         <h3 id="formTitle"></h3>
         <form id="dynamicForm">
             <div id="warningBox" style="display: none; color: green; margin-bottom: 10px;"></div>
             <div id="formFields"></div>
-            <h3 for="csvUpload">Bulk Upload (CSV):</h3>
-            <input type="file" id="csvUpload" accept=".csv">
-            <button type="submit">Submit</button>
+            <button type="submit" id="submitButton">Submit</button>
         </form>
     </div>
 
-    <!-- Load script.js for all JS functionalities -->
+    <!-- CSV Uploader (Visible in Bulk Mode) -->
+    <div id="csvContainer" style="display: none;">
+        <h3>Bulk Upload (CSV):</h3>
+        <input type="file" id="csvUpload" accept=".csv">
+        <button type="submit" form="dynamicForm">Upload</button>
+    </div>
+
+    <!-- Load JS file for all functionalities -->
     <script src="script.js"></script>
 </body>
 </html>
