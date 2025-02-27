@@ -72,7 +72,7 @@ document.getElementById("entryTypeSelect").addEventListener("change", function (
 // =========================
 // Dynamic Form Generation
 // =========================
-function triggerForm(table) {
+async function triggerForm(table) {
     const formFields = document.getElementById("formFields");
     formFields.innerHTML = "";
 
@@ -90,7 +90,7 @@ function triggerForm(table) {
     };
 
     if (tableFields[table]) {
-        tableFields[table].forEach(field => {
+        for (let field of tableFields[table]) {
             const fieldContainer = document.createElement("div");
             fieldContainer.classList.add("form-group");
 
@@ -98,98 +98,55 @@ function triggerForm(table) {
             label.textContent = field;
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
-            const input = document.createElement("input");
-            input.type = "text";
-            input.name = field.toLowerCase().replace(/\s+/g, "_");
-            input.classList.add("form-control");
+            // Check if field needs a dropdown
+            if (["Country", "Location", "Technology", "Business Unit", "Legal Entity"].includes(field)) {
+                const select = document.createElement("select");
+                select.name = field.toLowerCase().replace(/\s+/g, "_");
+                select.classList.add("form-control");
 
-            fieldContainer.appendChild(label);
-            fieldContainer.appendChild(input);
+                // Fetch dropdown values from S3 using API Gateway
+                const values = await fetchDropdownValues(field.toLowerCase().replace(/\s+/g, "_"));
+
+                // Populate dropdown options
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+                values.forEach(value => {
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(select);
+            } else {
+                // Default to text input
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = field.toLowerCase().replace(/\s+/g, "_");
+                input.classList.add("form-control");
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
+            }
             formFields.appendChild(fieldContainer);
-        });
+        }
     }
 }
 
 // =========================
-// Handle Form Submission
+// Fetch Dropdown Values
 // =========================
-document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-    
-    const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
-    let payload = { table: table, data: [] };
-
-    // Get CSV file
-    const csvFile = document.getElementById("csvUpload").files[0];
-
-    if (csvFile) {
-        const csvData = await parseCSV(csvFile);
-        if (csvData.length === 0) {
-            alert("CSV file is empty or invalid.");
-            return;
-        }
-        payload.data = csvData;
-    } else {
-        // If no CSV, get form inputs
-        const inputs = this.querySelectorAll("input[type='text']");
-        let jsonData = {};
-
-        inputs.forEach(input => {
-            if (input.value.trim() !== "") {
-                jsonData[input.name] = input.value;
-            }
-        });
-
-        if (Object.keys(jsonData).length === 0) {
-            alert("Please either upload a CSV file or fill the form.");
-            return;
-        }
-
-        payload.data = [jsonData];
-    }
-
+async function fetchDropdownValues(tableName) {
     try {
-        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=${tableName}`, {
+            method: "GET"
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const result = await response.json();
-        alert(result.message || "Data uploaded successfully!");
-        
-        // Clear form after submission
-        document.getElementById("dynamicForm").reset();
-        document.getElementById("csvUpload").value = "";
+        return result.data || [];
     } catch (error) {
-        console.error("Error submitting data:", error);
-        alert("Error submitting data!");
+        console.error("Error fetching dropdown values:", error);
+        return [];
     }
-});
-
-// =========================
-// Parse CSV File into JSON
-// =========================
-async function parseCSV(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            const text = event.target.result;
-            const lines = text.split("\n").map(line => line.split(","));
-            const headers = lines.shift().map(header => header.trim());
-
-            const jsonData = lines.map(row => {
-                let obj = {};
-                row.forEach((value, index) => { obj[headers[index]] = value.trim(); });
-                return obj;
-            });
-            resolve(jsonData);
-        };
-        reader.onerror = () => reject("Error reading CSV file");
-        reader.readAsText(file);
-    });
 }
 
 // =========================
