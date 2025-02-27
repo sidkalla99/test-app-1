@@ -28,7 +28,7 @@
     <!-- Level 2: Create Dropdown (Shown if 'Create' is selected) -->
     <div id="createDropdown" style="display: none;">
         <label for="tableSelectCreate">Choose a Category:</label>
-        <select id="tableSelectCreate">
+        <select id="tableSelectCreate" class="table-select">
             <option value="">-- Select Category --</option>
             <option value="country">Country</option>
             <option value="asset">Asset</option>
@@ -40,15 +40,31 @@
             <option value="currency">Currency</option>
             <option value="energy_market">Energy Market</option>
         </select>
+        
+        <!-- Country Dropdown for Create Action -->
+        <div id="createCountryDropdown" style="display: none;">
+            <label for="countrySelectCreate">Country:</label>
+            <select id="countrySelectCreate" class="country-dropdown">
+                <option value="">-- Select Country --</option>
+            </select>
+        </div>
     </div>
 
     <!-- Level 2: Modify Dropdown (Shown if 'Modify' is selected) -->
     <div id="modifyDropdown" style="display: none;">
         <label for="tableSelectModify">Choose a Category:</label>
-        <select id="tableSelectModify">
+        <select id="tableSelectModify" class="table-select">
             <option value="">-- Select Category --</option>
             <option value="asset_description">Asset Description</option>
         </select>
+
+        <!-- Country Dropdown for Modify Action -->
+        <div id="modifyCountryDropdown" style="display: none;">
+            <label for="countrySelectModify">Country:</label>
+            <select id="countrySelectModify" class="country-dropdown">
+                <option value="">-- Select Country --</option>
+            </select>
+        </div>
     </div>
 
     <!-- Level 3: Manual or Bulk -->
@@ -56,7 +72,7 @@
         <label for="entryTypeSelect">Choose Entry Type:</label>
         <select id="entryTypeSelect">
             <option value="">-- Select Entry Type --</option>
-            <option value="manual">Manual</option>
+            <option value="manual" id="manualOption">Manual</option>
             <option value="bulk">Bulk</option>
         </select>
     </div>
@@ -67,6 +83,15 @@
         <form id="dynamicForm">
             <div id="warningBox" style="display: none; color: green; margin-bottom: 10px;"></div>
             <div id="formFields"></div>
+
+            <!-- Country Dropdown inside Dynamic Form -->
+            <div id="formCountryDropdown" style="display: none;">
+                <label for="countrySelectForm">Country:</label>
+                <select id="countrySelectForm" class="country-dropdown">
+                    <option value="">-- Select Country --</option>
+                </select>
+            </div>
+
             <button type="submit" id="submitButton">Submit</button>
         </form>
     </div>
