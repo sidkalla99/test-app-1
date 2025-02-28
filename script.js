@@ -70,52 +70,27 @@ document.getElementById("entryTypeSelect").addEventListener("change", function (
 });
 
 // =========================
-// Country Dropdown Cache
-// =========================
-let countryDropdownValues = [];
-
-// Fetch once and store for reuse
-async function fetchCountryValues() {
-    try {
-        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=country`, {
-            method: "GET"
-        });
-
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
-        const result = await response.json();
-        countryDropdownValues = result.data || [];
-        console.log("Fetched Country Values:", countryDropdownValues);
-    } catch (error) {
-        console.error("Error fetching country dropdown values:", error);
-    }
-}
-
-// Call this once when the page loads
-fetchCountryValues();
-
-// =========================
 // Dynamic Form Generation
 // =========================
-async function triggerForm(table) {
+function triggerForm(table) {
     const formFields = document.getElementById("formFields");
     formFields.innerHTML = "";
 
     const tableFields = {
         country: ["Id", "Country"],
-        asset: ["Asset", "Creation Date", "Country"],
-        technology: ["Technology"],
-        business_unit: ["Business Unit"],
-        legal_entity: ["Parent Company", "Legal Entity"],
-        iso: ["ISO", "Country"],
-        asset_description: ["Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Asset", "Description", "Month Year", "Ownership (%)"],
-        currency: ["Currency"],
-        energy_market: ["Energy Market", "Country"],
+        asset: ["Id", "Asset", "Creation Date", "Country"],
+        technology: ["Id", "Technology"],
+        business_unit: ["Id", "Business Unit"],
+        legal_entity: ["Id", "Parent Company", "Legal Entity"],
+        iso: ["Id", "ISO", "Country"],
+        asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
+        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
+        currency: ["Id", "Currency"],
+        energy_market: ["Id", "Energy Market", "Country"],
     };
 
     if (tableFields[table]) {
-        for (let field of tableFields[table]) {
+        tableFields[table].forEach(field => {
             const fieldContainer = document.createElement("div");
             fieldContainer.classList.add("form-group");
 
@@ -123,77 +98,97 @@ async function triggerForm(table) {
             label.textContent = field;
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
-            // Only create Country dropdown for specified tables
-            if (field === "Country" && ["asset", "iso", "energy_market"].includes(table)) {
-                const select = document.createElement("select");
-                select.name = field.toLowerCase().replace(/\s+/g, "_");
-                select.classList.add("form-control");
+            const input = document.createElement("input");
+            input.type = "text";
+            input.name = field.toLowerCase().replace(/\s+/g, "_");
+            input.classList.add("form-control");
 
-                // Populate dropdown options from cached values
-                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
-                countryDropdownValues.forEach(value => {
-                    select.innerHTML += `<option value="${value}">${value}</option>`;
-                });
-
-                fieldContainer.appendChild(label);
-                fieldContainer.appendChild(select);
-            } else {
-                // All other fields as text inputs
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = field.toLowerCase().replace(/\s+/g, "_");
-                input.classList.add("form-control");
-
-                fieldContainer.appendChild(label);
-                fieldContainer.appendChild(input);
-            }
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
             formFields.appendChild(fieldContainer);
-        }
+        });
     }
 }
 
 // =========================
-// Form Submission (POST Request)
+// Handle Form Submission (Dynamic Payload)
 // =========================
-async function submitForm(event) {
-    event.preventDefault(); // Prevents default form submission
-
+document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    
     const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
 
-    // Prepare payload
-    const formData = {};
-    const inputs = document.querySelectorAll("#formFields input, #formFields select");
+    // Get form inputs
+    const inputs = this.querySelectorAll("input[type='text']");
+    let formData = {};
+
     inputs.forEach(input => {
-        formData[input.name] = input.value;
+        if (input.value.trim() !== "") {
+            formData[input.name] = input.value;
+        }
     });
 
-    console.log("Payload:", formData);
+    console.log("Original Form Data:", formData);
+
+    // Field Mapping for Payload
+    const fieldMapping = {
+        country: { id: "id", country: "country" },
+        asset: { id: "id", asset: "asset", creation_date: "creation_date", country: "country" },
+        iso: { id: "id", iso: "iso", country: "country" },
+        asset_description: {
+            id: "id",
+            asset: "asset",
+            description: "description",
+            version_date: "version_date",
+            location: "location",
+            technology: "technology",
+            business_unit: "business_unit",
+            legal_entity: "legal_entity"
+        },
+        technology: { id: "id", technology: "technology" },
+        business_unit: { id: "id", business_unit: "business_unit" },
+        legal_entity: { id: "id", legal_entity: "legal_entity" },
+        ownership: { id: "id", ownership: "ownership" },
+        currency: { id: "id", currency: "currency" },
+        energy_market: { id: "id", energy_market: "energy_market" }
+    };
+
+    let transformedData = {};
+    Object.keys(fieldMapping[table]).forEach(key => {
+        const mappedKey = fieldMapping[table][key];
+        if (formData[key]) {
+            transformedData[mappedKey] = formData[key];
+        }
+    });
+
+    const payload = {
+        table: table,
+        data: [transformedData]
+    };
+
+    console.log("Transformed Payload:", JSON.stringify(payload));
 
     try {
-        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=${table}`, {
+        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(payload)
         });
 
-        if (response.ok) {
-            const result = await response.json();
-            alert("Data submitted successfully!");
-            console.log("Success:", result);
-        } else {
-            console.error("Server Error:", response.status, response.statusText);
-            alert("Failed to submit data. Please check the console for details.");
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    } catch (error) {
-        console.error("Network Error:", error);
-        alert("Network error occurred. Please try again.");
-    }
-}
 
-// Attach event listener for form submission
-document.getElementById("formContainer").addEventListener("submit", submitForm);
+        const result = await response.json();
+        console.log("Server Response:", result);
+        alert("Data submitted successfully!");
+    } catch (error) {
+        console.error("Server Error:", error);
+        alert("Failed to submit data. Check console for more details.");
+    }
+});
 
 // =========================
 // Reset Functions
