@@ -122,7 +122,7 @@ async function triggerForm(table) {
             label.textContent = field;
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
-            // Country Dropdown for Specific Tables
+            // Only create Country dropdown for specified tables
             if (field === "Country" && ["asset", "iso", "energy_market"].includes(table)) {
                 const select = document.createElement("select");
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
@@ -136,16 +136,8 @@ async function triggerForm(table) {
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
-            } else if (["Location", "Technology", "Business Unit", "Legal Entity"].includes(field)) {
-                // Other dropdowns (No API call)
-                const select = document.createElement("select");
-                select.name = field.toLowerCase().replace(/\s+/g, "_");
-                select.classList.add("form-control");
-                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
-                fieldContainer.appendChild(label);
-                fieldContainer.appendChild(select);
             } else {
-                // Default to text input
+                // All other fields as text inputs
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = field.toLowerCase().replace(/\s+/g, "_");
