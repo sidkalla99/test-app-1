@@ -40,14 +40,6 @@
             <option value="currency">Currency</option>
             <option value="energy_market">Energy Market</option>
         </select>
-        
-        <!-- Country Dropdown for Create Action -->
-        <div id="createCountryDropdown" style="display: none;">
-            <label for="countrySelectCreate">Country:</label>
-            <select id="countrySelectCreate" class="country-dropdown">
-                <option value="">-- Select Country --</option>
-            </select>
-        </div>
     </div>
 
     <!-- Level 2: Modify Dropdown (Shown if 'Modify' is selected) -->
@@ -57,14 +49,6 @@
             <option value="">-- Select Category --</option>
             <option value="asset_description">Asset Description</option>
         </select>
-
-        <!-- Country Dropdown for Modify Action -->
-        <div id="modifyCountryDropdown" style="display: none;">
-            <label for="countrySelectModify">Country:</label>
-            <select id="countrySelectModify" class="country-dropdown">
-                <option value="">-- Select Country --</option>
-            </select>
-        </div>
     </div>
 
     <!-- Level 3: Manual or Bulk -->
@@ -83,15 +67,6 @@
         <form id="dynamicForm">
             <div id="warningBox" style="display: none; color: green; margin-bottom: 10px;"></div>
             <div id="formFields"></div>
-
-            <!-- Country Dropdown inside Dynamic Form -->
-            <div id="formCountryDropdown" style="display: none;">
-                <label for="countrySelectForm">Country:</label>
-                <select id="countrySelectForm" class="country-dropdown">
-                    <option value="">-- Select Country --</option>
-                </select>
-            </div>
-
             <button type="submit" id="submitButton">Submit</button>
         </form>
     </div>
