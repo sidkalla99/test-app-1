@@ -69,10 +69,36 @@ document.getElementById("entryTypeSelect").addEventListener("change", function (
     }
 });
 
+
+// =========================
+// Country Dropdown Cache
+// =========================
+let countryDropdownValues = [];
+
+// Fetch once and store for reuse
+async function fetchCountryValues() {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=country`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        countryDropdownValues = result.data || [];
+        console.log("Fetched Country Values:", countryDropdownValues);
+    } catch (error) {
+        console.error("Error fetching country dropdown values:", error);
+    }
+}
+
+// Call this once when the page loads
+fetchCountryValues();
+
 // =========================
 // Dynamic Form Generation
 // =========================
-function triggerForm(table) {
+async function triggerForm(table) {
     const formFields = document.getElementById("formFields");
     formFields.innerHTML = "";
 
@@ -84,13 +110,13 @@ function triggerForm(table) {
         legal_entity: ["Id", "Parent Company", "Legal Entity"],
         iso: ["Id", "ISO", "Country"],
         asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Id", "Asset", "Description", "Version Date", "Month Year", "Ownership (%)"],
+        ownership: ["Id", "Asset", "Description", "Month Year", "Ownership (%)"],
         currency: ["Id", "Currency"],
         energy_market: ["Id", "Energy Market", "Country"],
     };
 
     if (tableFields[table]) {
-        tableFields[table].forEach(field => {
+        for (let field of tableFields[table]) {
             const fieldContainer = document.createElement("div");
             fieldContainer.classList.add("form-group");
 
@@ -98,15 +124,32 @@ function triggerForm(table) {
             label.textContent = field;
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
-            const input = document.createElement("input");
-            input.type = "text";
-            input.name = field.toLowerCase().replace(/\s+/g, "_");
-            input.classList.add("form-control");
+            // Only create Country dropdown for specified tables
+            if (field === "Country" && ["asset", "iso", "energy_market"].includes(table)) {
+                const select = document.createElement("select");
+                select.name = field.toLowerCase().replace(/\s+/g, "_");
+                select.classList.add("form-control");
 
-            fieldContainer.appendChild(label);
-            fieldContainer.appendChild(input);
+                // Populate dropdown options from cached values
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+                countryDropdownValues.forEach(value => {
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(select);
+            } else {
+                // All other fields as text inputs
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = field.toLowerCase().replace(/\s+/g, "_");
+                input.classList.add("form-control");
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
+            }
             formFields.appendChild(fieldContainer);
-        });
+        }
     }
 }
 
