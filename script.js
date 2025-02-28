@@ -102,7 +102,7 @@ async function triggerForm(table) {
     formFields.innerHTML = "";
 
     const tableFields = {
-        country: ["Country"],
+        country: ["Id", "Country"],
         asset: ["Asset", "Creation Date", "Country"],
         technology: ["Technology"],
         business_unit: ["Business Unit"],
