@@ -346,6 +346,46 @@ function populateFieldsForSelectedAsset(selectedAsset) {
 }
 
 // =========================
+// Duplicacy check and data appending for country table
+// =========================
+async function uploadData() {
+    const data = {
+        table: "country",
+        data: {
+            country: document.getElementById("countryInput").value.trim()
+        }
+    };
+
+    try {
+        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        // Display message in warning box
+        const warningBox = document.getElementById("warningBox");
+        
+        if (response.ok) {
+            warningBox.innerText = result.message;
+            warningBox.style.color = "green";
+            warningBox.style.display = "block";
+        } else {
+            warningBox.innerText = result.message;
+            warningBox.style.color = "red";
+            warningBox.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error uploading data:", error);
+        alert("An error occurred. Please try again later.");
+    }
+}
+
+// =========================
 // Event Listener for Modify -> Asset Description -> Manual
 // =========================
 document.getElementById("tableSelectModify").addEventListener("change", function () {
