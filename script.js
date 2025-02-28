@@ -152,6 +152,71 @@ async function triggerForm(table) {
 }
 
 // =========================
+// Fetch Asset Description Data for Modify Section
+// =========================
+async function fetchAssetDescriptionData() {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=asset_description`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        const assetDropdown = document.getElementById("assetDropdown");
+        assetDropdown.innerHTML = "<option value=''>-- Select Asset --</option>";
+
+        // Populate Asset dropdown with fetched data
+        result.data.forEach(asset => {
+            const option = document.createElement("option");
+            option.value = asset.asset_id;
+            option.textContent = asset.asset_name; // Assuming asset_name is the name of the asset field
+            assetDropdown.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Error fetching asset description data:", error);
+    }
+}
+
+// =========================
+// Asset Selection Handling
+// =========================
+document.getElementById("assetDropdown").addEventListener("change", function () {
+    const selectedAssetId = this.value;
+
+    if (selectedAssetId) {
+        populateAssetDescriptionFields(selectedAssetId);
+    }
+});
+
+// =========================
+// Populate Asset Description Fields on Asset Selection
+// =========================
+async function populateAssetDescriptionFields(assetId) {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=asset_description&asset_id=${assetId}`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        const asset = result.data[0]; // Assuming data is an array and we get the asset's details here
+
+        document.getElementById("description").value = asset.description || '';
+        document.getElementById("version_date").value = asset.version_date || '';
+        document.getElementById("location").value = asset.location || '';
+        document.getElementById("technology").value = asset.technology || '';
+        document.getElementById("business_unit").value = asset.business_unit || '';
+        document.getElementById("legal_entity").value = asset.legal_entity || '';
+
+    } catch (error) {
+        console.error("Error fetching asset description details:", error);
+    }
+}
+
+// =========================
 // Reset Functions
 // =========================
 function resetEntryType() {
