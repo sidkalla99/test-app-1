@@ -85,6 +85,7 @@ async function fetchCountryValues() {
         
         const result = await response.json();
         countryDropdownValues = result.data || [];
+        console.log("Fetched Country Values:", countryDropdownValues);
     } catch (error) {
         console.error("Error fetching country dropdown values:", error);
     }
@@ -152,10 +153,52 @@ async function triggerForm(table) {
 }
 
 // =========================
+// Form Submission (POST Request)
+// =========================
+async function submitForm(event) {
+    event.preventDefault(); // Prevents default form submission
+
+    const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
+
+    // Prepare payload
+    const formData = {};
+    const inputs = document.querySelectorAll("#formFields input, #formFields select");
+    inputs.forEach(input => {
+        formData[input.name] = input.value;
+    });
+
+    console.log("Payload:", formData);
+
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=${table}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert("Data submitted successfully!");
+            console.log("Success:", result);
+        } else {
+            console.error("Server Error:", response.status, response.statusText);
+            alert("Failed to submit data. Please check the console for details.");
+        }
+    } catch (error) {
+        console.error("Network Error:", error);
+        alert("Network error occurred. Please try again.");
+    }
+}
+
+// Attach event listener for form submission
+document.getElementById("formContainer").addEventListener("submit", submitForm);
+
+// =========================
 // Reset Functions
 // =========================
 function resetEntryType() {
-    // Reset entry type dropdown
     document.getElementById("entryTypeSelect").value = "";
     document.getElementById("formContainer").style.display = "none";
     document.getElementById("csvContainer").style.display = "none";
