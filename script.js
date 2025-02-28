@@ -99,7 +99,23 @@ async function triggerForm(table) {
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
             // Check if field needs a dropdown
-            if (["Country", "Location", "Technology", "Business Unit", "Legal Entity"].includes(field)) {
+            if (field === "Country" && ["asset", "iso", "energy_market"].includes(table)) {
+                const select = document.createElement("select");
+                select.name = field.toLowerCase().replace(/\s+/g, "_");
+                select.classList.add("form-control");
+
+                // Fetch dropdown values from S3 using API Gateway
+                const values = await fetchCountryDropdownValues(table);
+
+                // Populate dropdown options
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+                values.forEach(value => {
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(select);
+            } else if (["Location", "Technology", "Business Unit", "Legal Entity"].includes(field)) {
                 const select = document.createElement("select");
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
                 select.classList.add("form-control");
@@ -131,11 +147,30 @@ async function triggerForm(table) {
 }
 
 // =========================
-// Fetch Dropdown Values
+// Fetch Country Dropdown Values
 // =========================
-async function fetchDropdownValues(tableName) {
+async function fetchCountryDropdownValues(tableName) {
     try {
         const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=${tableName}`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
+        const result = await response.json();
+        return result.data || [];
+    } catch (error) {
+        console.error("Error fetching country dropdown values:", error);
+        return [];
+    }
+}
+
+// =========================
+// Fetch Other Dropdown Values
+// =========================
+async function fetchDropdownValues(field) {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=${field}`, {
             method: "GET"
         });
 
