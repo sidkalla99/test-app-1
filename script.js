@@ -77,11 +77,11 @@ let countryDropdownValues = [];
 // Fetch once and store for reuse
 async function fetchCountryValues() {
     try {
-        const response = await fetch(https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=country, {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=country`, {
             method: "GET"
         });
 
-        if (!response.ok) throw new Error(HTTP error! Status: ${response.status});
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const result = await response.json();
         countryDropdownValues = result.data || [];
@@ -129,9 +129,9 @@ async function triggerForm(table) {
                 select.classList.add("form-control");
 
                 // Populate dropdown options from cached values
-                select.innerHTML = <option value="">-- Select ${field} --</option>;
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
                 countryDropdownValues.forEach(value => {
-                    select.innerHTML += <option value="${value}">${value}</option>;
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
                 });
 
                 fieldContainer.appendChild(label);
