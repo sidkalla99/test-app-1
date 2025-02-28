@@ -234,6 +234,127 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 });
 
 // =========================
+// Global Variable to Store Asset Description Data
+// =========================
+let assetDescriptionData = [];
+
+// =========================
+// Fetch Asset Description Data
+// =========================
+async function fetchAssetDescriptionData() {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=asset_description`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        assetDescriptionData = result.data || [];
+        console.log("Fetched Asset Description Data:", assetDescriptionData);
+
+        populateAssetDropdown();
+    } catch (error) {
+        console.error("Error fetching asset description data:", error);
+    }
+}
+
+// =========================
+// Populate Asset Dropdown
+// =========================
+function populateAssetDropdown() {
+    const formFields = document.getElementById("formFields");
+    formFields.innerHTML = ""; // Clear previous fields
+
+    const assetContainer = document.createElement("div");
+    assetContainer.classList.add("form-group");
+
+    const label = document.createElement("label");
+    label.textContent = "Asset";
+    label.setAttribute("for", "asset");
+
+    const select = document.createElement("select");
+    select.name = "asset";
+    select.classList.add("form-control");
+    select.innerHTML = `<option value="">-- Select Asset --</option>`;
+
+    const uniqueAssets = [...new Set(assetDescriptionData.map(item => item.Asset))];
+    uniqueAssets.forEach(asset => {
+        select.innerHTML += `<option value="${asset}">${asset}</option>`;
+    });
+
+    select.addEventListener("change", function () {
+        populateFieldsForSelectedAsset(this.value);
+    });
+
+    assetContainer.appendChild(label);
+    assetContainer.appendChild(select);
+    formFields.appendChild(assetContainer);
+}
+
+// =========================
+// Populate Fields for Selected Asset
+// =========================
+function populateFieldsForSelectedAsset(selectedAsset) {
+    const formFields = document.getElementById("formFields");
+    
+    // Remove previous fields except the Asset dropdown
+    Array.from(formFields.children).forEach(child => {
+        if (!child.querySelector("select[name='asset']")) {
+            child.remove();
+        }
+    });
+
+    if (!selectedAsset) return;
+
+    // Get the row corresponding to the selected asset
+    const selectedRow = assetDescriptionData.find(item => item.Asset === selectedAsset);
+
+    // Field List for Asset Description Table
+    const fieldList = ["Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"];
+
+    fieldList.forEach(field => {
+        const fieldContainer = document.createElement("div");
+        fieldContainer.classList.add("form-group");
+
+        const label = document.createElement("label");
+        label.textContent = field;
+        label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
+
+        const select = document.createElement("select");
+        select.name = field.toLowerCase().replace(/\s+/g, "_");
+        select.classList.add("form-control");
+        
+        select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+
+        // Populate dropdown with all unique values for that field
+        const uniqueValues = [...new Set(assetDescriptionData.map(item => item[field]))];
+        uniqueValues.forEach(value => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            if (selectedRow[field] === value) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+
+        fieldContainer.appendChild(label);
+        fieldContainer.appendChild(select);
+        formFields.appendChild(fieldContainer);
+    });
+}
+
+// =========================
+// Event Listener for Modify -> Asset Description -> Manual
+// =========================
+document.getElementById("tableSelectModify").addEventListener("change", function () {
+    if (this.value === "asset_description" && document.getElementById("entryTypeSelect").value === "manual") {
+        fetchAssetDescriptionData();
+    }
+});
+
+// =========================
 // Reset Functions
 // =========================
 function resetEntryType() {
