@@ -3,13 +3,18 @@
 // =========================
 function updateDateTime() {
     const now = new Date();
-    const dateTimeString = now.toLocaleString('en-GB', {
+    // GMT Time (Greenwich Mean Time)
+    const gmtTime = now.toLocaleString('en-GB', {
+        timeZone: 'Etc/GMT',
         hour12: false
-    }) + " IST";
-    document.getElementById('dateTime').innerText = dateTimeString;
+    });
+    // Display GMT time
+    document.getElementById('dateTime').innerText = `GMT: ${gmtTime}`;
 }
+
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
+
 
 // =========================
 // Action Selection Handling
