@@ -3,18 +3,13 @@
 // =========================
 function updateDateTime() {
     const now = new Date();
-    // GMT Time (Greenwich Mean Time)
-    const gmtTime = now.toLocaleString('en-GB', {
-        timeZone: 'Etc/GMT',
+    const dateTimeString = now.toLocaleString('en-GB', {
         hour12: false
-    });
-    // Display GMT time
-    document.getElementById('dateTime').innerText = `GMT: ${gmtTime}`;
+    }) + " IST";
+    document.getElementById('dateTime').innerText = dateTimeString;
 }
-
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
-
 
 // =========================
 // Action Selection Handling
@@ -143,6 +138,24 @@ async function triggerForm(table) {
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
+
+            } else if (field === "Creation Date") {
+                // Only Creation Date field as a calendar picker
+                const input = document.createElement("input");
+                input.type = "date"; // Calendar picker
+                input.name = field.toLowerCase().replace(/\s+/g, "_");
+                input.classList.add("form-control");
+
+                // Format the date on change
+                input.addEventListener("change", function () {
+                    const date = new Date(this.value);
+                    const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+                    this.setAttribute("data-formatted", formattedDate);
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
+
             } else {
                 // All other fields as text inputs
                 const input = document.createElement("input");
@@ -157,7 +170,6 @@ async function triggerForm(table) {
         }
     }
 }
-
 // =========================
 // Handle Form Submission (Dynamic Payload)
 // =========================
@@ -298,6 +310,47 @@ function populateAssetDropdown() {
 }
 
 // =========================
+// Duplicacy check and data appending for country table
+// =========================
+async function uploadData() {
+    const data = {
+        table: "country",
+        data: {
+            country: document.getElementById("countryInput").value.trim()
+        }
+    };
+
+    try {
+        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        // Display message in warning box
+        const warningBox = document.getElementById("warningBox");
+        
+        if (response.ok) {
+            warningBox.innerText = result.message;
+            warningBox.style.color = "green";
+            warningBox.style.display = "block";
+        } else {
+            warningBox.innerText = result.message;
+            warningBox.style.color = "red";
+            warningBox.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error uploading data:", error);
+        alert("An error occurred. Please try again later.");
+    }
+}
+
+
+// =========================
 // Populate Fields for Selected Asset
 // =========================
 function populateFieldsForSelectedAsset(selectedAsset) {
@@ -348,46 +401,6 @@ function populateFieldsForSelectedAsset(selectedAsset) {
         fieldContainer.appendChild(select);
         formFields.appendChild(fieldContainer);
     });
-}
-
-// =========================
-// Duplicacy check and data appending for country table
-// =========================
-async function uploadData() {
-    const data = {
-        table: "country",
-        data: {
-            country: document.getElementById("countryInput").value.trim()
-        }
-    };
-
-    try {
-        const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        // Display message in warning box
-        const warningBox = document.getElementById("warningBox");
-        
-        if (response.ok) {
-            warningBox.innerText = result.message;
-            warningBox.style.color = "green";
-            warningBox.style.display = "block";
-        } else {
-            warningBox.innerText = result.message;
-            warningBox.style.color = "red";
-            warningBox.style.display = "block";
-        }
-    } catch (error) {
-        console.error("Error uploading data:", error);
-        alert("An error occurred. Please try again later.");
-    }
 }
 
 // =========================
