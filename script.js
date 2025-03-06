@@ -180,7 +180,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Field Mapping for Payload
     const fieldMapping = {
-        country: { id: "id", country: "country", country_code: "Country Code"},
+        country: { id: "id", country: "country", country_code: "country_code"},
         asset: { id: "id", asset: "asset", creation_date: "creation_date", country: "country" },
         iso: { id: "id", iso: "iso", country: "country" },
         asset_description: {
