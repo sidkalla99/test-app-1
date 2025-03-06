@@ -150,7 +150,7 @@ async function triggerForm(table) {
             label.setAttribute("for", field.toLowerCase().replace(/\s+/g, "_"));
 
             // Only create Country dropdown for specified tables
-            if (field === "Country" && ["asset", "iso", "energy_market"].includes(table)) {
+            if (field === "Country" && ["asset", "iso", "energy_node"].includes(table)) {
                 const select = document.createElement("select");
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
                 select.classList.add("form-control");
@@ -165,7 +165,7 @@ async function triggerForm(table) {
                 fieldContainer.appendChild(select);
             }
             // Only create Country dropdown for specified tables
-            else if (field === "iso" && ["energy_market"].includes(table)) {
+            else if (field === "iso" && ["energy_node"].includes(table)) {
                 const select = document.createElement("select");
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
                 select.classList.add("form-control");
