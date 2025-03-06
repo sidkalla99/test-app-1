@@ -1,15 +1,14 @@
 // =========================
-// Date and Time Display
+// UTC Date and Time Display
 // =========================
 function updateDateTime() {
     const now = new Date();
-    // GMT Time (Greenwich Mean Time)
-    const gmtTime = now.toLocaleString('en-GB', {
-        timeZone: 'Etc/GMT',
-        hour12: false
-    });
-    // Display GMT time
-    document.getElementById('dateTime').innerText = `GMT: ${gmtTime}`;
+
+    // Format UTC time in 24-hour format (YYYY-MM-DD HH:MM:SS)
+    const utcTime = now.toISOString().replace("T", " ").substring(0, 19);
+
+    // Display UTC time
+    document.getElementById('dateTime').innerText = `UTC: ${utcTime}`;
 }
 
 setInterval(updateDateTime, 1000);  // Update every second
@@ -90,9 +89,13 @@ async function fetchCountryValues() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const result = await response.json();
-        countryDropdownValues = result.data.map(entry => entry.country) || [];
-        
+        // Update dropdown values with 'id - country' format
+        countryDropdownValues = result.data.map(entry => ({
+            value: entry.id, 
+            text: `${entry.id} - ${entry.country}`
+        })) || [];
         console.log("Fetched Country Values:", countryDropdownValues);
+
     } catch (error) {
         console.error("Error fetching country dropdown values:", error);
     }
@@ -108,8 +111,10 @@ async function fetchISOValues() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const result = await response.json();
-        isoDropdownValues = result.data.map(entry => entry.iso) || [];
-        
+        isoDropdownValues = result.data.map(entry => ({
+            value: entry.id, 
+            text: `${entry.id} - ${entry.iso}`
+        })) || [];
         console.log("Fetched ISO Values:", isoDropdownValues);
     } catch (error) {
         console.error("Error fetching ISO dropdown values:", error);
@@ -128,16 +133,16 @@ async function triggerForm(table) {
     formFields.innerHTML = "";
 
     const tableFields = {
-        country: ["Id", "Country", "Country Code"],
-        asset: ["Id", "Asset", "Creation Date", "Country"],
-        technology: ["Id", "Technology"],
-        business_unit: ["Id", "Business Unit"],
-        legal_entity: ["Id", "Parent Company", "Legal Entity", "ZEL Code"],
-        iso: ["Id", "ISO", "Country", "ISO Code"],
-        asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Id", "Asset", "Description", "Start Date", "End Date", "Ownership (%)"],
-        currency: ["Id", "Currency", "Currency Code"],
-        energy_node: ["Id", "Energy Node", "Country", "ISO"],
+        country: ["Country", "Country Code"],
+        asset: ["Asset", "Creation Date", "Country"],
+        technology: ["Technology"],
+        business_unit: ["Business Unit"],
+        legal_entity: ["Parent Company", "Legal Entity", "ZEL Code"],
+        iso: ["ISO", "Country", "ISO Code"],
+        asset_description: ["Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
+        ownership: ["Asset", "Description", "Start Date", "End Date", "Ownership (%)"],
+        currency: ["Currency", "Currency Code"],
+        energy_node: ["Energy Node", "Country", "ISO"],
     };
 
     if (tableFields[table]) {
@@ -155,11 +160,12 @@ async function triggerForm(table) {
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
                 select.classList.add("form-control");
 
-                // Populate dropdown options from cached values
-                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
-                countryDropdownValues.forEach(value => {
-                    select.innerHTML += `<option value="${value}">${value}</option>`;
-                });
+		// Populate dropdown options from cached values
+    		select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+    		countryDropdownValues.forEach(({ value, text }) => {
+        	select.innerHTML += `<option value="${value}">${text}</option>`;
+    		});
+
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
@@ -172,14 +178,13 @@ async function triggerForm(table) {
 
                 // Populate dropdown options from cached values
                 select.innerHTML = `<option value="">-- Select ${field} --</option>`;
-                isoDropdownValues.forEach(value => {
-                    select.innerHTML += `<option value="${value}">${value}</option>`;
-                });
-
+    		isoDropdownValues.forEach(({ value, text }) => {
+        	select.innerHTML += `<option value="${value}">${text}</option>`;
+    		});
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
             }
-            else if (field === "Creation Date") {  // Fixed from "elseif" to "else if"
+            else if (["Creation Date", "Start Date", "End Date"].includes(field)) {  // Fixed from "elseif" to "else if"
                 const input = document.createElement("input"); // Added "const" to define input
                 input.type = "date";
                 input.name = field.toLowerCase().replace(/\s+/g, "_"); // Ensure name is set
@@ -212,12 +217,17 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
 
     // Get form inputs
-    const inputs = this.querySelectorAll("input[type='text']");
+    const inputs = this.querySelectorAll(".form-control");
     let formData = {};
 
     inputs.forEach(input => {
-        if (input.value.trim() !== "") {
-            formData[input.name] = input.value;
+        let fieldName = input.name;
+        
+        // If the input is a select dropdown for country or iso, store only the ID
+        if (fieldName === "country" || fieldName === "iso") {
+            formData[fieldName] = input.value;  // Stores only the ID
+        } else if (input.value.trim() !== "") {
+            formData[fieldName] = input.value;
         }
     });
 
@@ -225,11 +235,10 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Field Mapping for Payload
     const fieldMapping = {
-        country: { id: "id", country: "country", country_code: "country_code"},
-        asset: { id: "id", asset: "asset", creation_date: "creation_date", country: "country" },
-        iso: { id: "id", iso: "iso", country: "country", iso_code: "iso_code"},
+        country: {country: "country", country_code: "country_code"},
+        asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
+        iso: { iso: "iso", country: "country_id", iso_code: "iso_code"},
         asset_description: {
-            id: "id",
             asset: "asset",
             description: "description",
             version_date: "version_date",
@@ -238,12 +247,12 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             business_unit: "business_unit",
             legal_entity: "legal_entity"
         },
-        technology: { id: "id", technology: "technology" },
-        business_unit: { id: "id", business_unit: "business_unit" },
-        legal_entity: { id: "id", legal_entity: "legal_entity", zel_code: "zel_code" },
-        ownership: { id: "id", asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date", },
-        currency: { id: "id", currency: "currency", currency_code: "currency_code"},
-        energy_node: { id: "id", energy_node: "energy_node", country: "country", iso: "iso" }
+        technology: { technology: "technology" },
+        business_unit: { business_unit: "business_unit" },
+        legal_entity: { legal_entity: "legal_entity", zel_code: "zel_code" },
+        ownership: { asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date" },
+        currency: { currency: "currency", currency_code: "currency_code"},
+        energy_node: { energy_node: "energy_node", country: "country_id", iso: "iso_id" }
     };
 
     let transformedData = {};
@@ -291,7 +300,6 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         // Show actual API error message in the alert box
         alert(`Failed to submit data. ${error.message}`);
     }
-
 });
 
 // =========================
