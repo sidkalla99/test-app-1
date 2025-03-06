@@ -90,7 +90,10 @@ async function fetchCountryValues() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const result = await response.json();
-        countryDropdownValues = result.data || [];
+
+        // Extract only the "country" values from the "data" array
+        countryDropdownValues = result.data.map(entry => entry.country) || [];
+        
         console.log("Fetched Country Values:", countryDropdownValues);
     } catch (error) {
         console.error("Error fetching country dropdown values:", error);
