@@ -235,7 +235,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         alert("Data submitted successfully!");
     } catch (error) {
         console.error("Server Error:", error);
-        alert("Failed to submit data. Check console for more details.");
+        alert("Failed to submit data. Error: ${error.message}");
     }
 });
 
