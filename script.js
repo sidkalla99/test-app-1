@@ -226,11 +226,16 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             body: JSON.stringify(payload)
         });
     
-        const result = await response.json(); // Always parse JSON
+        let result;
+        try {
+            result = await response.json(); // Attempt to parse JSON response
+        } catch (jsonError) {
+            console.error("Failed to parse response JSON:", jsonError);
+            throw new Error(`HTTP error! Status: ${response.status} (Invalid JSON response)`);
+        }
     
         if (!response.ok) {
-            // Throw the actual API error message if available
-            throw new Error(result.error || `HTTP error! Status: ${response.status}`);
+            throw new Error(result?.error || `HTTP error! Status: ${response.status}`);
         }
     
         console.log("Server Response:", result);
@@ -238,10 +243,9 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     } catch (error) {
         console.error("Server Error:", error);
     
-        // Show actual API error message if available
-        alert(`Failed to submit data. Error: ${error.message}`);
+        // Show actual API error message in the alert box
+        alert(`Failed to submit data. ${error.message}`);
     }
-
 
 });
 
