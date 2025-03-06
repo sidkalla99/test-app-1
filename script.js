@@ -211,7 +211,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     const payload = {
         table: table,
-        insert_method: manual,
+        insert_method: "manual",
         data: [transformedData]
     };
 
