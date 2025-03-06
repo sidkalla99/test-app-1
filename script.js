@@ -108,7 +108,7 @@ async function fetchISOValues() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const result = await response.json();
-        isoDropdownValues = result.data.map(entry => entry.iso_name) || [];
+        isoDropdownValues = result.data.map(entry => entry.iso) || [];
         
         console.log("Fetched ISO Values:", isoDropdownValues);
     } catch (error) {
