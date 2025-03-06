@@ -108,7 +108,7 @@ async function triggerForm(table) {
     formFields.innerHTML = "";
 
     const tableFields = {
-        country: ["Id", "Country"],
+        country: ["Id", "Country", "Country Code"],
         asset: ["Id", "Asset", "Creation Date", "Country"],
         technology: ["Id", "Technology"],
         business_unit: ["Id", "Business Unit"],
@@ -180,7 +180,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Field Mapping for Payload
     const fieldMapping = {
-        country: { id: "id", country: "country" },
+        country: { id: "id", country: "country", country_code: "Country Code"},
         asset: { id: "id", asset: "asset", creation_date: "creation_date", country: "country" },
         iso: { id: "id", iso: "iso", country: "country" },
         asset_description: {
