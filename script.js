@@ -144,9 +144,14 @@ async function triggerForm(table) {
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
             } 
-            else if (field === "Creation Date") {
-                input = document.createElement("input");
+            else if (field === "Creation Date") {  // Fixed from "elseif" to "else if"
+                const input = document.createElement("input"); // Added "const" to define input
                 input.type = "date";
+                input.name = field.toLowerCase().replace(/\s+/g, "_"); // Ensure name is set
+                input.classList.add("form-control");
+            
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
             }
             else {
                 // All other fields as text inputs
