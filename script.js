@@ -225,18 +225,22 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             },
             body: JSON.stringify(payload)
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
+    
         const result = await response.json();
+    
+        if (!response.ok) {
+            throw new Error(result.message || `HTTP error! Status: ${response.status}`);
+        }
+    
         console.log("Server Response:", result);
         alert("Data submitted successfully!");
     } catch (error) {
         console.error("Server Error:", error);
-        alert("Failed to submit data. Error: ${error.message}");
+    
+        // Display the actual API response error message in the alert
+        alert(`Failed to submit data. Error: ${error.message}`);
     }
+
 });
 
 // =========================
