@@ -112,12 +112,12 @@ async function triggerForm(table) {
         asset: ["Id", "Asset", "Creation Date", "Country"],
         technology: ["Id", "Technology"],
         business_unit: ["Id", "Business Unit"],
-        legal_entity: ["Id", "Parent Company", "Legal Entity"],
-        iso: ["Id", "ISO", "Country"],
+        legal_entity: ["Id", "Parent Company", "Legal Entity", "ZEL Code"],
+        iso: ["Id", "ISO", "Country", "ISO Code"],
         asset_description: ["Id", "Asset", "Description", "Version Date", "Location", "Technology", "Business Unit", "Legal Entity"],
-        ownership: ["Id", "Asset", "Description", "Month Year", "Ownership (%)"],
-        currency: ["Id", "Currency"],
-        energy_market: ["Id", "Energy Market", "Country"],
+        ownership: ["Id", "Asset", "Description", "Start Date", "End Date", "Ownership (%)"],
+        currency: ["Id", "Currency", "Currency Code"],
+        energy_node: ["Id", "Energy Node", "Country", "ISO"],
     };
 
     if (tableFields[table]) {
@@ -143,7 +143,12 @@ async function triggerForm(table) {
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
-            } else {
+            } 
+            else if (field === "Creation Date") {
+                input = document.createElement("input");
+                input.type = "date";
+            }
+            else {
                 // All other fields as text inputs
                 const input = document.createElement("input");
                 input.type = "text";
@@ -182,7 +187,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     const fieldMapping = {
         country: { id: "id", country: "country", country_code: "country_code"},
         asset: { id: "id", asset: "asset", creation_date: "creation_date", country: "country" },
-        iso: { id: "id", iso: "iso", country: "country" },
+        iso: { id: "id", iso: "iso", country: "country", iso_code: "iso_code"},
         asset_description: {
             id: "id",
             asset: "asset",
@@ -195,10 +200,10 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         },
         technology: { id: "id", technology: "technology" },
         business_unit: { id: "id", business_unit: "business_unit" },
-        legal_entity: { id: "id", legal_entity: "legal_entity" },
-        ownership: { id: "id", ownership: "ownership" },
-        currency: { id: "id", currency: "currency" },
-        energy_market: { id: "id", energy_market: "energy_market" }
+        legal_entity: { id: "id", legal_entity: "legal_entity", zel_code: "zel_code" },
+        ownership: { id: "id", asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date", },
+        currency: { id: "id", currency: "currency", currency_code: "currency_code"},
+        energy_node: { id: "id", energy_node: "energy_node", country: "country", iso: "iso" }
     };
 
     let transformedData = {};
