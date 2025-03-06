@@ -226,10 +226,11 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
             body: JSON.stringify(payload)
         });
     
-        const result = await response.json();
+        const result = await response.json(); // Always parse JSON
     
         if (!response.ok) {
-            throw new Error(result.message || `HTTP error! Status: ${response.status}`);
+            // Throw the actual API error message if available
+            throw new Error(result.error || `HTTP error! Status: ${response.status}`);
         }
     
         console.log("Server Response:", result);
@@ -237,9 +238,10 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     } catch (error) {
         console.error("Server Error:", error);
     
-        // Display the actual API response error message in the alert
+        // Show actual API error message if available
         alert(`Failed to submit data. Error: ${error.message}`);
     }
+
 
 });
 
