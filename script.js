@@ -74,13 +74,13 @@ document.getElementById("entryTypeSelect").addEventListener("change", function (
     }
 });
 
-
 // =========================
-// Country Dropdown Cache
+// Dropdown Data Caches
 // =========================
 let countryDropdownValues = [];
+let isoDropdownValues = [];
 
-// Fetch once and store for reuse
+// Fetch Country Values
 async function fetchCountryValues() {
     try {
         const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=country`, {
@@ -90,8 +90,6 @@ async function fetchCountryValues() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const result = await response.json();
-
-        // Extract only the "country" values from the "data" array
         countryDropdownValues = result.data.map(entry => entry.country) || [];
         
         console.log("Fetched Country Values:", countryDropdownValues);
@@ -100,8 +98,27 @@ async function fetchCountryValues() {
     }
 }
 
-// Call this once when the page loads
+// Fetch ISO Values
+async function fetchISOValues() {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=iso`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        isoDropdownValues = result.data.map(entry => entry.iso_name) || [];
+        
+        console.log("Fetched ISO Values:", isoDropdownValues);
+    } catch (error) {
+        console.error("Error fetching ISO dropdown values:", error);
+    }
+}
+
+// Call these once when the page loads
 fetchCountryValues();
+fetchISOValues();
 
 // =========================
 // Dynamic Form Generation
@@ -146,7 +163,22 @@ async function triggerForm(table) {
 
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
-            } 
+            }
+            // Only create Country dropdown for specified tables
+            else if (field === "iso" && ["energy_market"].includes(table)) {
+                const select = document.createElement("select");
+                select.name = field.toLowerCase().replace(/\s+/g, "_");
+                select.classList.add("form-control");
+
+                // Populate dropdown options from cached values
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+                isoDropdownValues.forEach(value => {
+                    select.innerHTML += `<option value="${value}">${value}</option>`;
+                });
+
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(select);
+            }
             else if (field === "Creation Date") {  // Fixed from "elseif" to "else if"
                 const input = document.createElement("input"); // Added "const" to define input
                 input.type = "date";
