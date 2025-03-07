@@ -531,7 +531,7 @@ function csvToJson(csv) {
 
 // Function to handle the CSV data and send to API
 async function handleCSVData(data) {
-    const table = document.getElementById("tableSelectModify").value; // Dynamically get selected table // Change this dynamically based on your needs
+    const table = document.getElementById("tableSelectCreate").value; // Dynamically get selected table // Change this dynamically based on your needs
     const fieldMapping = {
         country: { country: "country", country_code: "country_code" },
         asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
