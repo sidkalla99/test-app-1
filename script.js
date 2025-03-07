@@ -14,7 +14,6 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
 
-
 // =========================
 // Action Selection Handling
 // =========================
@@ -451,6 +450,169 @@ async function uploadData() {
     } catch (error) {
         console.error("Error uploading data:", error);
         alert("An error occurred. Please try again later.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dynamicForm = document.getElementById("dynamicForm");
+
+    if (!dynamicForm) {
+        console.error('Form "dynamicForm" not found in the DOM');
+        return;
+    }
+
+    dynamicForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const fileInput = document.getElementById("csvUpload");
+        const file = fileInput.files[0];
+
+        // Check if file is selected and is of the correct type (CSV)
+        if (!file) {
+            document.getElementById("csvUploadStatus").textContent = "Please select a CSV file to upload.";
+            return;
+        }
+
+        if (file.type !== "text/csv") {
+            document.getElementById("csvUploadStatus").textContent = "Please upload a valid CSV file.";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = async function () {
+            const csvData = reader.result;
+            const jsonData = csvToJson(csvData);
+
+            // Check if CSV data is valid and contains rows
+            if (jsonData && jsonData.length > 0) {
+                document.getElementById("csvUploadStatus").textContent = "Processing your CSV data...";
+                await handleCSVData(jsonData); // Handle the data directly here
+            } else {
+                document.getElementById("csvUploadStatus").textContent = "No valid data found in CSV.";
+            }
+        };
+
+        reader.readAsText(file); // Read the file as text and trigger the onload function
+    });
+});
+
+// Function to convert CSV to JSON
+function csvToJson(csv) {
+    const lines = csv.split("\n");
+    const result = [];
+    const headers = lines[0].split(",");
+
+    for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentLine = lines[i].split(",");
+
+        for (let j = 0; j < headers.length; j++) {
+            obj[headers[j].trim()] = currentLine[j].trim();
+        }
+        result.push(obj);
+    }
+    return result;
+}
+
+// Function to handle the CSV data and send to API
+async function handleCSVData(data) {
+    const table = "technology"; // Change this dynamically based on your needs
+    const fieldMapping = {
+        country: { country: "country", country_code: "country_code" },
+        asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
+        iso: { iso: "iso", country: "country_id", iso_code: "iso_code" },
+        asset_description: {
+            asset: "asset",
+            description: "description",
+            version_date: "version_date",
+            location: "location",
+            technology: "technology",
+            business_unit: "business_unit",
+            legal_entity: "legal_entity"
+        },
+        technology: { technology: "technology" },
+        business_unit: { business_unit: "business_unit" },
+        legal_entity: { legal_entity: "legal_entity", zel_code: "zel_code" },
+        ownership: { asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date" },
+        currency: { currency: "currency", currency_code: "currency_code" },
+        energy_node: { energy_node: "energy_node", country: "country_id", iso: "iso_id" }
+    };
+
+    // Don't show the warning box for bulk uploads
+    const warningBox = document.getElementById("warningBox");
+    warningBox.style.display = "none"; // Hide warning box during bulk upload
+
+    // Check if field mapping exists for the table
+    if (!fieldMapping[table]) {
+        console.error(`Error: No field mapping found for table: ${table}`);
+        document.getElementById("csvUploadStatus").textContent = `No field mapping found for table: ${table}`;
+        return;
+    }
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    // Iterate over the CSV rows
+    for (const rowData of data) {
+        let transformedData = {};
+
+        // Map CSV data to field mapping
+        Object.keys(fieldMapping[table]).forEach(key => {
+            const mappedKey = fieldMapping[table][key];
+
+            // Check if the key exists in the rowData (CSV row)
+            if (rowData[key]) {
+                transformedData[mappedKey] = rowData[key];
+            }
+        });
+
+        // Check if transformedData has any valid keys (to avoid sending empty data)
+        if (Object.keys(transformedData).length === 0) {
+            console.log("Skipping empty row:", rowData);
+            continue; // Skip the row if it contains no valid data
+        }
+
+        // Prepare payload for the API
+        const payload = {
+            table: table,
+            insert_method: "bulk", // or "manual" depending on your use case
+            data: [transformedData]
+        };
+
+        console.log("Transformed Payload for CSV Row:", JSON.stringify(payload));
+
+        // Send the transformed data to the API
+        try {
+            const response = await fetch("https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                console.log("Error uploading CSV data:", result?.error);
+                errorCount++;
+                continue; // Skip further processing for this row if there was an error
+            }
+
+            console.log("Server Response for CSV Row:", result);
+            successCount++;
+        } catch (error) {
+            console.error("Error uploading CSV data:", error);
+            errorCount++;
+        }
+    }
+
+    // Skip the warning box and display a status in the upload section
+    if (successCount > 0) {
+        document.getElementById("csvUploadStatus").textContent = `${successCount} rows uploaded successfully.`;
+    }
+    if (errorCount > 0) {
+        document.getElementById("csvUploadStatus").textContent += ` ${errorCount} errors occurred during upload.`;
     }
 }
 
