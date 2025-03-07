@@ -518,9 +518,12 @@ function csvToJson(csv) {
         const obj = {};
         const currentLine = lines[i].split(",");
 
-        for (let j = 0; j < headers.length; j++) {
-            obj[headers[j].trim()] = currentLine[j].trim();
-        }
+	for (let j = 0; j < headers.length; j++) {
+	    const header = headers[j] ? headers[j].trim() : ""; // Ensure header is a string
+	    const value = currentLine[j] ? currentLine[j].trim() : ""; // Ensure value is a string
+	    obj[header] = value;
+	}
+
         result.push(obj);
     }
     return result;
