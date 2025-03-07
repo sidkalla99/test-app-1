@@ -248,7 +248,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
         },
         technology: { technology: "technology" },
         business_unit: { business_unit: "business_unit" },
-        legal_entity: { legal_entity: "legal_entity", zel_code: "zel_code" },
+        legal_entity: { parent_company: "parent_company", legal_entity: "legal_entity", zel_code: "zel_code" },
         ownership: { asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date" },
         currency: { currency: "currency", currency_code: "currency_code"},
         energy_node: { energy_node: "energy_node", country: "country_id", iso: "iso_id" }
