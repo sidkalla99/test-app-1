@@ -413,6 +413,50 @@ function populateFieldsForSelectedAsset(selectedAsset) {
     });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const dynamicForm = document.getElementById("dynamicForm");
+
+    if (!dynamicForm) {
+        console.error('Form "dynamicForm" not found in the DOM');
+        return;
+    }
+
+    dynamicForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const fileInput = document.getElementById("csvUpload");
+        const file = fileInput.files[0];
+
+        // Check if file is selected and is of the correct type (CSV)
+        if (!file) {
+            document.getElementById("csvUploadStatus").textContent = "Please select a CSV file to upload.";
+            return;
+        }
+
+        if (file.type !== "text/csv") {
+            document.getElementById("csvUploadStatus").textContent = "Please upload a valid CSV file.";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = async function () {
+            const csvData = reader.result;
+            const jsonData = csvToJson(csvData);
+
+            // Check if CSV data is valid and contains rows
+            if (jsonData && jsonData.length > 0) {
+                document.getElementById("csvUploadStatus").textContent = "Processing your CSV data...";
+                await handleCSVData(jsonData); // Handle the data directly here
+            } else {
+                document.getElementById("csvUploadStatus").textContent = "No valid data found in CSV.";
+            }
+        };
+
+        reader.readAsText(file); // Read the file as text and trigger the onload function
+    });
+});
+
 // Function to convert CSV to JSON
 function csvToJson(csv) {
     const lines = csv.split("\n");
