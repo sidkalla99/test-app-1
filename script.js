@@ -528,7 +528,7 @@ function csvToJson(csv) {
 
 // Function to handle the CSV data and send to API
 async function handleCSVData(data) {
-    const table = "technology"; // Change this dynamically based on your needs
+    const table = document.getElementById("tableSelectModify").value; // Dynamically get selected table // Change this dynamically based on your needs
     const fieldMapping = {
         country: { country: "country", country_code: "country_code" },
         asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
@@ -544,7 +544,7 @@ async function handleCSVData(data) {
         },
         technology: { technology: "technology" },
         business_unit: { business_unit: "business_unit" },
-        legal_entity: { legal_entity: "legal_entity", zel_code: "zel_code" },
+        legal_entity: { parent_company: "parent_company",  legal_entity: "legal_entity", zel_code: "zel_code" },
         ownership: { asset_id: "asset_id", description: "description", ownership: "ownership", start_date: "start_date", end_date: "end_date" },
         currency: { currency: "currency", currency_code: "currency_code" },
         energy_node: { energy_node: "energy_node", country: "country_id", iso: "iso_id" }
