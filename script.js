@@ -26,7 +26,7 @@ document.getElementById("actionSelect").addEventListener("change", function () {
     // Reset All Selections
     document.getElementById("tableSelectCreate").value = "";
     document.getElementById("tableSelectModify").value = "";
-    document.getElementById("entryTypeSelect").value = "";
+    document.getElementById("uploadModeSelect").value = "";
     document.getElementById("formContainer").style.display = "none";
     document.getElementById("csvContainer").style.display = "none";
 
@@ -56,7 +56,7 @@ document.getElementById("tableSelectModify").addEventListener("change", function
 // =========================
 // Entry Type Selection
 // =========================
-document.getElementById("entryTypeSelect").addEventListener("change", function () {
+document.getElementById("uploadModeSelect").addEventListener("change", function () {
     const entryType = this.value;
     const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
 
@@ -210,9 +210,20 @@ async function triggerForm(table) {
 // =========================
 // Handle Form Submission (Dynamic Payload)
 // =========================
+
 document.getElementById("dynamicForm").addEventListener("submit", async function (event) {
     event.preventDefault();
-    
+
+    // Get the upload mode selection dynamically
+    const modeSelect = document.querySelector("#uploadModeSelect"); 
+    const mode = modeSelect ? modeSelect.value : "manual"; // Default to manual
+
+    console.log("Selected Mode:", mode); // Debugging check
+
+    if (mode === "bulk") {
+        console.log("Bulk upload detected. Skipping alert.");
+        return; // Stop execution for bulk uploads
+    }
     const table = document.getElementById("tableSelectCreate").value || document.getElementById("tableSelectModify").value;
 
     // Get form inputs
@@ -620,7 +631,7 @@ async function handleCSVData(data) {
 // Event Listener for Modify -> Asset Description -> Manual
 // =========================
 document.getElementById("tableSelectModify").addEventListener("change", function () {
-    if (this.value === "asset_description" && document.getElementById("entryTypeSelect").value === "manual") {
+    if (this.value === "asset_description" && document.getElementById("uploadModeSelect").value === "manual") {
         fetchAssetDescriptionData();
     }
 });
@@ -629,7 +640,7 @@ document.getElementById("tableSelectModify").addEventListener("change", function
 // Reset Functions
 // =========================
 function resetEntryType() {
-    document.getElementById("entryTypeSelect").value = "";
+    document.getElementById("uploadModeSelect").value = "";
     document.getElementById("formContainer").style.display = "none";
     document.getElementById("csvContainer").style.display = "none";
 }
