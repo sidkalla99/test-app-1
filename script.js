@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check if CSV data is valid and contains rows
             if (jsonData && jsonData.length > 0) {
-                document.getElementById("csvUploadStatus").textContent = "Processing your CSV data...";
+                document.getElementById("csvUploadStatus").textContent = "Processing your CSV data.";
                 await handleCSVData(jsonData); // Handle the data directly here
             } else {
                 document.getElementById("csvUploadStatus").textContent = "No valid data found in CSV.";
