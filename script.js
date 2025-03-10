@@ -133,7 +133,7 @@ async function triggerForm(table) {
 
     const tableFields = {
         country: ["Country", "Country Code"],
-        asset: ["Asset", "Creation Date", "Country"],
+        asset: ["Asset", "Country"],
         technology: ["Technology"],
         business_unit: ["Business Unit"],
         legal_entity: ["Parent Company", "Legal Entity", "ZEL Code"],
@@ -183,7 +183,7 @@ async function triggerForm(table) {
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
             }
-            else if (["Creation Date", "Start Date", "End Date"].includes(field)) {  // Fixed from "elseif" to "else if"
+            else if (["Start Date", "End Date"].includes(field)) {  // Fixed from "elseif" to "else if"
                 const input = document.createElement("input"); // Added "const" to define input
                 input.type = "date";
                 input.name = field.toLowerCase().replace(/\s+/g, "_"); // Ensure name is set
@@ -246,7 +246,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     // Field Mapping for Payload
     const fieldMapping = {
         country: {country: "country", country_code: "country_code"},
-        asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
+        asset: { asset: "asset", country: "country_id" },
         iso: { iso: "iso", country: "country_id", iso_code: "iso_code"},
         asset_description: {
             asset: "asset",
@@ -534,7 +534,7 @@ async function handleCSVData(data) {
     const table = document.getElementById("tableSelectCreate").value; // Dynamically get selected table // Change this dynamically based on your needs
     const fieldMapping = {
         country: { country: "country", country_code: "country_code" },
-        asset: { asset: "asset", creation_date: "creation_date", country: "country_id" },
+        asset: { asset: "asset", country: "country_id" },
         iso: { iso: "iso", country: "country_id", iso_code: "iso_code" },
         asset_description: {
             asset: "asset",
