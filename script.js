@@ -77,6 +77,7 @@ document.getElementById("uploadModeSelect").addEventListener("change", function 
 // =========================
 let countryDropdownValues = [];
 let isoDropdownValues = [];
+let BUDropdownValues = [];
 
 // Fetch Country Values
 async function fetchCountryValues() {
@@ -120,9 +121,30 @@ async function fetchISOValues() {
     }
 }
 
+// Fetch Business Unit Values
+async function fetchBUValues() {
+    try {
+        const response = await fetch(`https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?table=business_unit`, {
+            method: "GET"
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const result = await response.json();
+        BUDropdownValues = result.data.map(entry => ({
+            value: entry.id, 
+            text: `${entry.id} - ${entry.business_unit}`
+        })) || [];
+        console.log("Fetched BU Values:", BUDropdownValues);
+    } catch (error) {
+        console.error("Error fetching BU dropdown values:", error);
+    }
+}
+
 // Call these once when the page loads
 fetchCountryValues();
 fetchISOValues();
+fetchBUValues();
 
 // =========================
 // Dynamic Form Generation
