@@ -281,7 +281,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Field Mapping for Payload
     const fieldMapping = {
-        country: {country: "country", country_code: "country_code", BU_id: "business_unit"},
+        country: {country: "country", country_code: "country_code", business_unit: "BU_id"},
         asset: { asset: "asset", country: "country_id" },
         iso: { iso: "iso", country: "country_id", iso_code: "iso_code"},
         asset_description: {
