@@ -132,7 +132,7 @@ async function triggerForm(table) {
     formFields.innerHTML = "";
 
     const tableFields = {
-        country: ["Country", "Country Code"],
+        country: ["Country", "Country Code", "Business Unit"],
         asset: ["Asset", "Country"],
         technology: ["Technology"],
         business_unit: ["Business Unit"],
@@ -169,7 +169,7 @@ async function triggerForm(table) {
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(select);
             }
-            // Only create Country dropdown for specified tables
+            // Only create ISO dropdown for specified tables
             else if (field === "ISO" && ["energy_node"].includes(table)) {
                 const select = document.createElement("select");
                 select.name = field.toLowerCase().replace(/\s+/g, "_");
@@ -178,6 +178,20 @@ async function triggerForm(table) {
                 // Populate dropdown options from cached values
                 select.innerHTML = `<option value="">-- Select ${field} --</option>`;
     		isoDropdownValues.forEach(({ value, text }) => {
+        	select.innerHTML += `<option value="${value}">${text}</option>`;
+    		});
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(select);
+            }
+            // Only create Business Unit dropdown for specified tables
+            else if (field === "Business Unit" && ["country"].includes(table)) {
+                const select = document.createElement("select");
+                select.name = field.toLowerCase().replace(/\s+/g, "_");
+                select.classList.add("form-control");
+
+                // Populate dropdown options from cached values
+                select.innerHTML = `<option value="">-- Select ${field} --</option>`;
+    		BUDropdownValues.forEach(({ value, text }) => {
         	select.innerHTML += `<option value="${value}">${text}</option>`;
     		});
                 fieldContainer.appendChild(label);
@@ -233,8 +247,8 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
     inputs.forEach(input => {
         let fieldName = input.name;
         
-        // If the input is a select dropdown for country or iso, store only the ID
-        if (fieldName === "country" || fieldName === "iso") {
+        // If the input is a select dropdown for country, iso or business_unit, store only the ID
+        if (fieldName === "country" || fieldName === "iso" || fieldName === "business_unit") {
             formData[fieldName] = input.value;  // Stores only the ID
         } else if (input.value.trim() !== "") {
             formData[fieldName] = input.value;
@@ -245,7 +259,7 @@ document.getElementById("dynamicForm").addEventListener("submit", async function
 
     // Field Mapping for Payload
     const fieldMapping = {
-        country: {country: "country", country_code: "country_code"},
+        country: {country: "country", country_code: "country_code", BU_id: "business_unit"},
         asset: { asset: "asset", country: "country_id" },
         iso: { iso: "iso", country: "country_id", iso_code: "iso_code"},
         asset_description: {
