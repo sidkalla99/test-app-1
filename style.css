@@ -1,80 +1,85 @@
 body { 
-    font-family: Arial, sans-serif; 
-    max-width: 600px; 
-    margin: auto; 
-    padding: 80px 20px 20px 20px; 
-}
-
-/* Navbar Styles */
-.navbar {
-    background-color: #333;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 10px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    box-sizing: border-box;
-}
-
-.navbar-left {
-    display: flex;
-    align-items: center;
-    gap: 30px; /* space between logo and links */
-}
-
-.navbar img { 
-    height: 30px;
-}
-
-.nav-links {
-    display: flex;
-    gap: 15px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-links li a {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    font-size: 18px;
-}
-
-.nav-links li a:hover {
-    color: orange; /* Highlight on hover */
-}
-
-.navbar .date-time {
-    font-size: 14px;
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-label, select, input, button { 
-    display: block; 
-    margin-top: 10px; 
-    width: 90%;  /* Reduce width to 90% */
-    padding: 8px; 
-    box-sizing: border-box; 
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#formContainer, 
-#csvContainer { 
-    margin-top: 20px; 
-    border: 1px solid #ccc; 
-    padding: 20px; 
-    display: none; 
-    background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+     font-family: Arial, sans-serif; 
+     max-width: 600px; 
+     margin: auto; 
+     padding: 80px 20px 20px 20px; 
+ }
+ 
+ /* Navbar Styles */
+ .navbar {
+     background-color: #333;
+     color: white;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 10px 20px;
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     z-index: 1000;
+     box-sizing: border-box;
+ }
+ 
+ .navbar img {
+     height: 30px;
+ }
+ 
+ .navbar .date-time {
+     font-size: 14px;
+     text-align: right;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+ }
+ 
+ #loadDashboardButton {
+     background-color: #4CAF50; /* Green background */
+     color: white;
+     border: none;
+     padding: 8px 16px;
+     border-radius: 5px;
+     font-size: 14px;
+     cursor: pointer;
+     width: auto; /* Don't stretch full width */
+     min-width: 150px; /* Minimum size */
+     max-width: 200px; /* Maximum size */
+     text-align: center;
+     transition: background-color 0.3s ease;
+ }
+ 
+ #loadDashboardButton:hover {
+     background-color: #45a049;
+ }
+ 
+ label, select, input, button { 
+     display: block; 
+     margin-top: 10px; 
+     width: 90%;  /* Reduce width to 90% */
+     padding: 8px; 
+     box-sizing: border-box; 
+     margin-left: auto;
+     margin-right: auto;
+ }
+ 
+ #formContainer, 
+ #csvContainer { 
+     margin-top: 20px; 
+     border: 1px solid #ccc; 
+     padding: 20px; 
+     display: none; 
+     background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+     border-radius: 10px;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+ }
+ 
+ html, body {
+     margin: 0;
+     padding: 0;
+     height: 100%;
+     width: 100%;
+ }
+ 
+ #dashboardContainer {
+     display: flex;
+     flex-direction: column;
