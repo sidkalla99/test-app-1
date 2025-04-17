@@ -73,21 +73,24 @@ label, select, input, button {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-body, html {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
 }
 
 #dashboardContainer {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: calc(100vh - 60px); /* Adjust 60px if your navbar height is different */
-    overflow: hidden;
+    height: calc(100vh - 60px); /* Adjust 60px based on header height */
     margin: 0;
     padding: 0;
 }
 
 #quicksightDashboard {
+    flex-grow: 1;
     width: 100%;
     height: 100%;
     border: none;
