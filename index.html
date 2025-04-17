@@ -10,10 +10,15 @@
 
     <!-- Navbar -->
     <div class="navbar">
-        <img src="company_logo.png" alt="Company Logo">
-        <button id="loadDashboardButton">Go to Dashboard</button>
+        <div class="navbar-left">
+          <img src="company_logo.png" alt="Company Logo" class="logo">
+          <ul class="nav-links">
+            <li><a href="index.html" onclick="backToIndexButton">Home</a></li>
+            <li><a href="dashboard.html" onclick="loadDashboardButton">Analytics</a></li>
+          </ul>
+        </div>
         <div class="date-time" id="dateTime"></div>
-    </div>
+      </div>
 
     <h1>Energy Trading and Risk Management Data Uploader Tool</h1>
     
