@@ -18,26 +18,69 @@ updateDateTime();  // Initial call
 function loadDashboard() {
     const embedUrl = localStorage.getItem('embed_url');
     if (embedUrl) {
-        document.getElementById('quicksightDashboard').src = embedUrl;
+        const quicksightIframe = document.getElementById('quicksightDashboard');
+        if (quicksightIframe) {
+            quicksightIframe.src = embedUrl;
+        } else {
+            console.error('No "quicksightDashboard" iframe element found on this page.');
+        }
     } else {
         console.error('Embed URL not found in localStorage');
+        alert('Failed to load the QuickSight dashboard. Please try again.');
     }
 }
 
-// Event listener for "Go to Dashboard" button
-document.getElementById('loadDashboardButton').addEventListener('click', function() {
-    // Store the embed URL (you can get it from wherever it's generated in your application)
-    const embedUrl = localStorage.getItem('embed_url');
+// Add event listener when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("DOM fully loaded and parsed");
+
+    // Check if this is the dashboard page
+    const isDashboardPage = window.location.pathname.includes("dashboard.html");
     
-    // Check if embed URL exists
-    if (embedUrl) {
-        // Store the URL temporarily if needed
-        localStorage.setItem('embed_url', embedUrl);
-        
-        // Navigate to the dashboard page
-        window.location.href = 'dashboard.html';
+    if (isDashboardPage) {
+        // On dashboard page, load the embed URL into the iframe
+        loadDashboard();
     } else {
-        alert('Embed URL not found!');
+        const loadDashboardButton = document.getElementById('loadDashboardButton');
+
+        // Ensure button exists before attaching event listener
+        if (loadDashboardButton) {
+            console.log('"loadDashboardButton" found, attaching event listener');
+            
+            loadDashboardButton.addEventListener('click', async function () {
+                try {
+                    console.log('Fetching the embed URL...');
+                    
+                    // Fetch the embed URL from API
+                    const response = await fetch('https://9h29vyhchd.execute-api.eu-central-1.amazonaws.com/zelestra-etrm-raw-datauploader?action=get_quicksight_embed_url', {
+                        method: "GET"
+                    });
+
+                    console.log('Raw response:', response);
+
+                    // Parse the response as JSON
+                    const result = await response.json();
+                    console.log('Parsed result:', result);
+
+                    // Check for embed_url in the response
+                    if (result && result.embed_url) {
+                        localStorage.setItem('embed_url', result.embed_url); // Store URL in localStorage
+
+                        console.log('Embed URL stored successfully, redirecting to dashboard.html');
+                        window.location.href = 'dashboard.html'; // Redirect to dashboard page
+                    } else {
+                        console.error('Embed URL missing in result.');
+                        alert('Failed to fetch the Embed URL!');
+                    }
+                } catch (error) {
+                    console.error('Error fetching embed URL:', error);
+                    alert('Error fetching the Embed URL!');
+                }
+            });
+
+        } else {
+            console.log('No "loadDashboardButton" found on this page. Maybe this is dashboard.html?');
+        }
     }
 });
 
