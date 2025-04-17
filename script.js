@@ -14,6 +14,19 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);  // Update every second
 updateDateTime();  // Initial call
 
+// Function to load the Dashboard Embed URL from LocalStorage
+function loadDashboard() {
+    const embedUrl = localStorage.getItem('embed_url');
+    if (embedUrl) {
+        document.getElementById('quicksightDashboard').src = embedUrl;
+    } else {
+        console.error('Embed URL not found in localStorage');
+    }
+}
+
+// Load Dashboard when the page is ready
+window.onload = loadDashboard;
+
 // =========================
 // Action Selection Handling
 // =========================
