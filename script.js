@@ -24,8 +24,22 @@ function loadDashboard() {
     }
 }
 
-// Load Dashboard when the page is ready
-window.onload = loadDashboard;
+// Event listener for "Go to Dashboard" button
+document.getElementById('loadDashboardButton').addEventListener('click', function() {
+    // Store the embed URL (you can get it from wherever it's generated in your application)
+    const embedUrl = localStorage.getItem('embed_url');
+    
+    // Check if embed URL exists
+    if (embedUrl) {
+        // Store the URL temporarily if needed
+        localStorage.setItem('embed_url', embedUrl);
+        
+        // Navigate to the dashboard page
+        window.location.href = 'dashboard.html';
+    } else {
+        alert('Embed URL not found!');
+    }
+});
 
 // =========================
 // Action Selection Handling
