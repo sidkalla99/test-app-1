@@ -72,3 +72,23 @@ label, select, input, button {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#dashboardContainer {
+    width: 100%;
+    height: calc(100vh - 60px); /* Adjust 60px if your navbar height is different */
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#quicksightDashboard {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
