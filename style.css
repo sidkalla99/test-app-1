@@ -5,56 +5,50 @@ body {
     padding: 80px 20px 20px 20px; 
 }
 
-/* Navbar Styling */
+/* Navbar Styles */
 .navbar {
+    background-color: #333;
+    color: white;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background-color: #222; /* Darker background */
-    color: #fff;
-    padding: 10px 20px;
-    height: 70px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-    position: relative;
-}
-
-.navbar-left,
-.navbar-center,
-.navbar-right {
-    display: flex;
     align-items: center;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
-.logo {
-    height: 50px;
+.navbar img {
+    height: 30px;
 }
 
-.app-title {
-    margin: 0;
-    font-size: 24px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.date-time {
-    margin-right: 20px;
+.navbar .date-time {
     font-size: 14px;
-    color: #ccc;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Button Style */
-.nav-button {
-    background-color: #4CAF50; /* Nice green */
+#loadDashboardButton {
+    background-color: #4CAF50; /* Green background */
     color: white;
     border: none;
-    padding: 10px 16px;
+    padding: 8px 16px;
     border-radius: 5px;
-    cursor: pointer;
     font-size: 14px;
+    cursor: pointer;
+    width: auto; /* Don't stretch full width */
+    min-width: 150px; /* Minimum size */
+    max-width: 200px; /* Maximum size */
+    text-align: center;
     transition: background-color 0.3s ease;
 }
 
-.nav-button:hover {
+#loadDashboardButton:hover {
     background-color: #45a049;
 }
 
