@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 10px 10px;
     position: fixed;
     top: 0;
     left: 0;
@@ -21,8 +21,33 @@ body {
     box-sizing: border-box;
 }
 
-.navbar img {
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* space between logo and links */
+}
+
+.navbar img { 
     height: 30px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.nav-links li a:hover {
+    color: orange; /* Highlight on hover */
 }
 
 .navbar .date-time {
@@ -31,25 +56,6 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-#loadDashboardButton {
-    background-color: #4CAF50; /* Green background */
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    width: auto; /* Don't stretch full width */
-    min-width: 150px; /* Minimum size */
-    max-width: 200px; /* Maximum size */
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-#loadDashboardButton:hover {
-    background-color: #45a049;
 }
 
 label, select, input, button { 
@@ -71,20 +77,4 @@ label, select, input, button {
     background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-#dashboardContainer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: calc(100vh - 60px); /* Adjust 60px based on header height */
-    margin: 0;
-    padding: 0;
-}
-
-#quicksightDashboard {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    border: none;
 }
