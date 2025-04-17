@@ -51,7 +51,27 @@ body {
  #loadDashboardButton:hover {
      background-color: #45a049;
  }
+ #backToIndexButton {
+     background-color: #4CAF50; /* Green background */
+     color: white;
+     border: none;
+     padding: 8px 16px;
+     border-radius: 5px;
+     font-size: 14px;
+     cursor: pointer;
+     width: auto; /* Don't stretch full width */
+     min-width: 150px; /* Minimum size */
+     max-width: 200px; /* Maximum size */
+     text-align: center;
+     transition: background-color 0.3s ease;
+ }
  
+ #backToIndexButton:hover {
+     background-color: #45a049;
+ }
+
+
+
  label, select, input, button { 
      display: block; 
      margin-top: 10px; 
