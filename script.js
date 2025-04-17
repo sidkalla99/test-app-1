@@ -40,6 +40,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isDashboardPage) {
         // On dashboard page, load the embed URL into the iframe
         loadDashboard();
+        // Add event listener to the "Back to Index" button
+        const backToIndexButton = document.getElementById('backToIndexButton');
+        
+        if (backToIndexButton) {
+            backToIndexButton.addEventListener('click', function () {
+                console.log('Redirecting to index.html');
+                window.location.href = 'index.html'; // Redirect back to index page
+            });
+        } else {
+            console.error('Back to Index button not found!');
+        }
     } else {
         const loadDashboardButton = document.getElementById('loadDashboardButton');
 
